@@ -168,9 +168,9 @@ function darkenHexColor(hex, percent) {
   let adjust = (percent / 100) * 255;
 
   // Adjust and clamp each color component
-  r = Math.min(255, r - adjust);
-  g = Math.min(255, g - adjust);
-  b = Math.min(255, b - adjust);
+  r = Math.max(0, r - adjust);
+  g = Math.max(0, g - adjust);
+  b = Math.max(0, b - adjust);
 
   // Convert back to hex and return
   return "#" + 
