@@ -1,0 +1,369 @@
+/* Variables */
+/* https://coolors.co/001b2e-84dcc6-7d6d61-edafb8-f7e1d7 */
+:root {
+  /* --color-neutral: #EDD3C4; */
+  --color-neutral: #9d99a0;
+  --color-light: #fbf4ee;
+  --color-dark: #1a090d;
+  --color-action: #ace894;
+  --color-light-accent: #a8ba9a;
+  --color-dark-accent: #4a314d; 
+  
+}
+
+/* canvas reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* canvas */
+.canvas-container {
+  display: grid;
+  grid-template-columns: 768px 1fr;
+  grid-template-rows: auto 2rem 1fr;
+  overflow: auto;
+  gap: 1rem;
+  padding: 1rem;
+  max-height: 100vh;
+
+  background: var(--color-dark);
+  color: var(--color-light);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+
+}
+.canvas-container header {
+  grid-column: 1/span 2;
+  grid-row: 1;
+  display: flex;
+  justify-content: center;
+}
+
+
+#game-setup {
+  grid-column: 1/span 2;
+  background: var(--color-dark-accent);
+  border-radius: 1rem;
+  justify-content: space-evenly;
+}
+
+#roles {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+#players {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.center {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.align-horizontal {
+  display: flex;
+}
+
+.list-container {
+  background: var(--color-dark-accent);
+  border-radius: 2rem;
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+
+  row-gap: 1rem;
+  padding: 2rem;
+
+  justify-content: start;
+  align-items: start;
+  overflow: auto;
+}
+
+.list-container h2 {
+  grid-row: 1;
+  grid-column: 1/span 2;
+}
+
+.list {
+  grid-row: 2;
+  grid-column: 1/span 2;
+
+  display: grid;
+  gap: .5rem;
+}
+
+.list-tile {
+  color: var(--color-light);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: .4em;
+  box-shadow: 0px 2px 6px 0px rgba(0, 0, 0,.5);
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto auto;
+  
+  width: min(700px, max-content);
+  height: max-content;
+
+  padding: .1em;
+
+  align-items: center;
+
+  row-gap: .4rem;
+  column-gap: 1rem;
+}
+
+
+.input-field {
+  border: 3px solid var(--color-action);
+  box-shadow: inset 6px 2px 6px 0px rgba(50,50,50,.3); 
+
+  width: min-content;
+  padding: .1rem 1.5rem;
+  height: 2rem;
+
+  font-size: 1.4rem;
+  font-weight: 700;
+
+  background: var(--color-light);
+  color: var(--color-dark);
+  
+}
+
+.input-field:hover {
+  text-indent: 2px;
+  margin-top: 2px;
+}
+
+.input-field::placeholder {
+  color: var(--color-light-accent);
+}
+
+.input-field:disabled {
+  background-color: var(--color-light-accent);
+  border-color: var(--color-light-accent)
+}
+
+.primary-btn {
+  position: relative;
+  box-sizing: border-box;
+  background-color: var(--color-action);
+  color: var(--color-dark-accent);
+
+  cursor: pointer;
+  
+  border: 2px solid var(--color-action);
+  border-radius: 2rem;
+  
+  /* box-shadow: 0px 2px 6px 0px rgba(50,50,50,.3); */
+
+  width: min-content;
+  padding: .2rem 1.5rem;
+  height: 2rem;
+  line-height: .9rem;
+
+  font-size: 1.4rem;
+  font-weight: 600;
+
+  transition:
+    text 0.3s ease-in-out, 
+    background 0.3s ease;
+}
+
+.primary-btn::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  width: 150%;
+  height: 150%;
+  background: linear-gradient(top top left, transparent 50%, var(--color-action) 50%);
+  transform: rotate(45deg);
+  transform-origin: bottom right;
+  transition: top 0.2s ease-out, left 0.2s ease-out;
+}
+
+.primary-btn:hover {
+  background: var(--color-dark-accent);
+  color: var(--color-action);
+  text-indent: 2px;
+  margin-top: 2px;
+}
+
+.primary-btn:active {
+  background-color: var(--color-action);
+  color: var(--color-dark-accent);
+  text-indent: 4px;
+  margin-top: 4px;
+}
+
+.primary-btn:active::before {
+  top: -25%;
+  left: -25%;
+}
+
+.primary-btn:disabled {
+  background-color: var(--color-dark-accent);
+  color: var(--color-light-accent);
+  border-color: var(--color-light-accent);
+}
+
+#expansion {
+  font-size: 1.6rem;
+  margin: 0 2rem;
+}
+
+#expansion p {
+  padding-bottom: .1rem;
+}
+
+#add-player-btn {
+  grid-row: 1;
+  grid-column: 2;
+  border-radius: 0;
+  border-top-left-radius: 2rem;
+  border-bottom-left-radius: 2rem;
+}
+
+#new-player {
+  grid-row: 1;
+  grid-column: 3;
+  border-top-right-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+}
+
+#assign-roles {
+  grid-row: 2;
+  grid-column: 2/span 2;
+  max-height: 2rem;
+}
+
+.role-name {
+  font-size: 1.8rem;
+}
+
+.role-description, .win-condition {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-light);
+} 
+
+.role-description {
+  grid-row: 2;
+}
+
+.role-description span {
+  font-style: italic;
+  text-align: center;
+}
+
+.win-condition {
+  grid-column: 2;
+  grid-row: 3;
+  font-weight: 600;
+}
+
+
+
+
+
+.role-portrait {
+  box-sizing: content-box;
+  width: 128px;
+  height: 128px;
+  border-radius: .5rem;
+  grid-row: 1/span 3;
+  border: 3px solid whitesmoke;
+  transition: all .3s ease-in-out;
+}
+.role-portrait:hover {
+  width: 256px;
+  height: 256px;
+}
+
+
+
+/* toggle button */
+.toggle-btn {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  margin-left: .5rem;
+}
+
+.toggle-btn input {
+  display: none;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-dark-accent);
+  transition: 0.4s;
+  border-radius: 24px;
+  border: 2px solid var(--color-action);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--color-action);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--color-action);
+}
+
+input:checked + .slider:before {
+  transform: translateX(21px);
+  background-color: var(--color-dark-accent);
+}
+
+/* scroll bars */
+.list-container::-webkit-scrollbar {
+  display: block;
+  width: .6rem;
+}
+
+.list-container::-webkit-scrollbar-thumb {
+  background-color: var(--color-action);
+  border: 2px solid var(--color-action);
+  border-radius: 1rem;
+}
+
+.list-container::-webkit-scrollbar-track {
+  margin: 1.5rem 0;
+}
+
+
+
+
+
+
+
+
+/* canvas Resizing */
+/* @media (max-width: 1520px) {
+
+
+} */
+
+

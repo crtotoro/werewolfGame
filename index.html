@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div id="canvas" class="canvas-container">
+      <header>
+        <h1 class="center">Werewolf</h1>
+      </header>
+      
+      <div id="game-setup" class="align-horizontal center">
+        <div id="expansion" class="align-horizontal center">
+          <p>Expansion</p>
+          <label class="toggle-btn">
+            <input type="checkbox" id="expansion-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div id="add-player" class="align-horizontal">
+          <input type="button" id="add-player-btn" class="primary-btn" value="Add Player">
+          <input type="text" id="new-player" class="input-field" placeholder="Name" min="1">
+        </div>
+        <input id="assign-roles-btn" type="button" class="primary-btn" value="Assign Roles">
+      </div>
+
+      <div id="players" class="list-container">
+        <h2 id="players-header">Players</h2>
+        <div id="players-list" class="list">
+          <p id="no-players">Add four or more players to start.</p>
+        </div>
+      </div>
+
+      <div id="roles" class="list-container">
+        <h2 id="roles-header">Potential Roles</h2>
+        <div id="roles-list" class="list"></div>
+      </div>
+
+
+    </div>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

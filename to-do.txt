@@ -1,0 +1,139 @@
+To do
+Features:
+  - Human Admin Mode (in progress)
+  - Player Mode
+    - Notes on other players
+    - Suspected role tag
+    - Confident or Suspicious tags 
+    - See eliminated players
+    - 
+  - Auto Admin Mode
+
+*****************************************
+IN PROGRESS
+
+- add player
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+Stories
+  - roll roles
+  - start game
+  - page transition from menu to new game
+  - switch to night
+  - next day
+  - morning announcements
+
+  - eliminate player
+  - assign Mimic morph
+  - 
+
+Bonus Content:
+- methods for each role action based on reminders to queue morning announcements
+
+html
+
+
+
+css
+  - create color palette
+  - learn how to use variables 
+  - create sheet variables
+  - .container
+  - .flex
+  - .list-container
+  - .list
+  - .list-tile
+
+
+
+
+Done
+  - game Class 
+  - day and time (day # and day or night)
+  - player list
+  - player count
+  - role list
+  - game mode (standard or expansion)
+  - method to add players to game
+  - method to add roles
+  - method to disable role
+  - method to delete role
+  - method to assign roles
+  - create image for each role
+  - choose color for each role
+  
+
+
+
+
+
+/* Role Styles */
+#werewolf-role {
+  /* background-color: #ad0000; */
+  background: linear-gradient(to top left, #3b0606, #832727);
+}
+
+#town-resident-role {
+  background-color: #ce835c;
+  background: linear-gradient(to top left, #ce835c, #e4a685);
+}
+
+#sheriff-role {
+  background-color: hsl(37, 77%, 65%);
+  background: linear-gradient(to top left, #c58146, #ebb663)
+}
+
+#vigilante-role {
+  background-color: #7a6757;
+  background: linear-gradient(to top left, #7a6757, #c5bfb1);
+}
+
+#doctor-role {
+  background-color: #4dafc5;
+  background: linear-gradient(to top left, #3194aa,#79d0e4)
+}
+
+#jester-role {
+  background-color: #6a4d74;
+  background: linear-gradient(to top left, #6a4d74, #a781b4)
+  /* background: radial-gradient(#ae44d8) */
+}
+
+#mimic-role {
+  background-color: #956079;
+  background: linear-gradient(to top left, #956079, #d690b1 )
+}
+
+#bodyguard-role {
+  background-color: #d9893d;
+  background: linear-gradient(to top left, #383331, #7c6860);
+
+}
+
+#mayor-role {
+  background-color: #28727e;
+  background: linear-gradient(to top left, #28727e, #63a5b4);
+}
+
+#medium-role {
+  background-color: #a09c99;
+  background: linear-gradient(to top left, #867f7c, #b9b5b2)
+}
+
+#rogue-role {
+  background-color: #698c52;
+  background: linear-gradient(to top left, #698c52, #92bd76)
+}
+
+#witch-doctor-role {
+  background-color: #da582d;
+  background: linear-gradient(to top left, #da582d, #f8906d)
+}
+
+#overworked-investigator-role {
+  /* overworked investigator */
+  background: linear-gradient(to top left, #b8825f,#c8a887);
+}
