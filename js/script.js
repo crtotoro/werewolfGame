@@ -1,9 +1,10 @@
 import WerewolfGame from "./werewolf.js";
+import { darkenHexColor } from "./utilities.js";
 
 
 // global variables
-var currentGame = new WerewolfGame();
-localStorage.setItem("currentGame", JSON.stringify(currentGame));
+var storedGame = localStorage.getItem("currentGame");
+var currentGame = JSON.parse(storedGame) ? Object.assign(new WerewolfGame(), JSON.parse(storedGame)) : new WerewolfGame();
 window.currentGame = currentGame;
 
 
@@ -67,9 +68,6 @@ function refreshPlayerList() {
   while(playerList.firstChild) playerList.removeChild(playerList.firstChild);
   if(currentGame.players) { 
     currentGame.players.forEach(player => playerList.appendChild(newPlayerCard(player)));
-  } else {
-
-    playerList.appendChild()
   }
 }
 
@@ -105,78 +103,66 @@ function toggleImage(imageId) {
 
 
 // at page launch
-refreshRoleList();
+
+document.addEventListener('DOMContentLoaded', () => {
+  
+  if (window.location.pathname === '/index.html') {
+    refreshRoleList();
+    if(currentGame.players.length) {
+      refreshPlayerList();
+      if(!currentGame.unassignedPlayers.length) {
+        let startGameBtn = document.createElement("input");
+        startGameBtn.id = "start-game-btn"; startGameBtn.type = "button"; startGameBtn.className = "primary-btn"; startGameBtn.value = "Start Game";
+        startGameBtn.addEventListener("click", () => {
+          localStorage.setItem("currentGame", JSON.stringify(currentGame));
+          window.location.href = "game.html";
+        });
+        document.getElementById("game-setup").appendChild(startGameBtn);
+        document.getElementById("assign-roles-btn").value = "Reset Roles";
+      }
+    }
+    document.getElementById("expansion-toggle").addEventListener('change', () => {
+      currentGame.toggleExpansion();
+      refreshRoleList(); 
+    });
+    document.getElementById("add-player-btn").addEventListener("click", addPlayer);
+    document.getElementById("new-player").addEventListener("keyup", e => {if(e.key === "Enter" || event.keyCode === 13) addPlayer()});
+    // assign/reset roles
+    document.getElementById("game-setup").addEventListener("click", e => {
+      if(e.target.id === "assign-roles-btn" && e.target.value === "Assign Roles") {
+        currentGame.refreshGameRoles();
+        currentGame.assignRoles();
+        refreshPlayerList();
+    
+        let startGameBtn = document.createElement("input");
+        startGameBtn.id = "start-game-btn"; startGameBtn.type = "button"; startGameBtn.className = "primary-btn"; startGameBtn.value = "Start Game";
+        startGameBtn.addEventListener("click", () => {
+          localStorage.setItem("currentGame", JSON.stringify(currentGame));
+          window.location.href = "game.html";
+        });
+        document.getElementById("game-setup").appendChild(startGameBtn);
+        e.target.value = "Reset Roles";
+      } else if (e.target.id === "assign-roles-btn" && e.target.value === "Reset Roles") {
+        currentGame.resetRoleAssignments();
+        refreshPlayerList();
+        document.getElementById("start-game-btn").remove();
+        e.target.value = "Assign Roles";
+      }
+    });
+  } else if (window.location.pathname === '/game.html') {
+    refreshPlayerList();
+  }});
+
+// window.BeforeUnloadEvent = () => {
+//   localStorage.setItem("currentGame", JSON.stringify(currentGame));
+// }
 
 
 
 // listening for:
 // expansion toggle
-document.getElementById("expansion-toggle").addEventListener('change', () => {
-  currentGame.toggleExpansion();
-  refreshRoleList(); 
-});
-// add player
-document.getElementById("add-player-btn").addEventListener("click", addPlayer);
-document.getElementById("new-player").addEventListener("keyup", e => {if(e.key === "Enter" || event.keyCode === 13) addPlayer()});
-// assign/reset roles
-document.getElementById("game-setup").addEventListener("click", e => {
-  if(e.target.id === "assign-roles-btn" && e.target.value === "Assign Roles") {
-    currentGame.refreshGameRoles();
-    currentGame.assignRoles();
-    refreshPlayerList();
-    document.getElementById("add-player-btn").disabled = true;
-    document.getElementById("new-player").disabled = true;
-    e.target.value = "Reset Roles";
-  } else if (e.target.id === "assign-roles-btn" && e.target.value === "Reset Roles") {
-    currentGame.resetRoleAssignments();
-    refreshPlayerList();
-    document.getElementById("add-player-btn").disabled = false;
-    document.getElementById("new-player").disabled = false;
-    e.target.value = "Assign Roles";
-  }
-});
 
 
-function lightenHexColor(hex, percent) {
-  // Convert hex to RGB
-  let r = parseInt(hex.substring(1, 3), 16);
-  let g = parseInt(hex.substring(3, 5), 16);
-  let b = parseInt(hex.substring(5, 7), 16);
 
-  // Calculate the adjustment value
-  let adjust = (percent / 100) * 255;
 
-  // Adjust and clamp each color component
-  r = Math.min(255, r + adjust);
-  g = Math.min(255, g + adjust);
-  b = Math.min(255, b + adjust);
-
-  // Convert back to hex and return
-  return "#" + 
-      Math.round(r).toString(16).padStart(2, '0') + 
-      Math.round(g).toString(16).padStart(2, '0') + 
-      Math.round(b).toString(16).padStart(2, '0');
-}
-
-function darkenHexColor(hex, percent) {
-  // Convert hex to RGB
-  let r = parseInt(hex.substring(1, 3), 16);
-  let g = parseInt(hex.substring(3, 5), 16);
-  let b = parseInt(hex.substring(5, 7), 16);
-
-  // Calculate the adjustment value
-  let adjust = (percent / 100) * 255;
-
-  // Adjust and clamp each color component
-  r = Math.max(0, r - adjust);
-  g = Math.max(0, g - adjust);
-  b = Math.max(0, b - adjust);
-
-  // Convert back to hex and return
-  return "#" + 
-      Math.round(r).toString(16).padStart(2, '0') + 
-      Math.round(g).toString(16).padStart(2, '0') + 
-      Math.round(b).toString(16).padStart(2, '0');
-}
-
-// Example usage
+export { refreshPlayerList, toggleImage };

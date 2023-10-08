@@ -5,8 +5,8 @@ export default class WerewolfGame {
     this.unassignedPlayers = [...this.players]
     this.assignedPlayers = [];
     this.roles = [
-      { name: 'Werewolf', key: 'werewolf', color: '#832727', ability: 'Werewolves take human form during the day, doing their best Town Resident impression. When the moon rises, the pack embraces their true form and hunts one victim each night.', winCondition: 'Ravage town to match its population.', reminder: 'nightly', assigned: [], expansion: false, enabled: true, images: ["werewolf-both"], selectedImage: null },
-      { name: 'Town Resident', key: 'town-resident', color: '#E4A685', ability: "Town Residents are eager to help despite always getting picked last. They may not be the best at fighting werewolves... <span>but if you need 'em, they can vote.</span>", winCondition: 'Eliminate Werewolves to save town.', reminder: null, assigned: [], expansion: false, enabled: true, images: ["town_resident-male", "town_resident-female"], selectedImage: null },
+      { name: 'Werewolf', key: 'werewolf', color: '#832727', ability: 'Werewolves take human form during the day, doing their best Town Resident impression. When the moon rises, the pack embraces their true form and hunts one victim each night.', winCondition: 'Ravage town to match its population.', reminder: 'nightly', assigned: 0, expansion: false, enabled: true, images: ["werewolf-both"], selectedImage: null },
+      { name: 'Town Resident', key: 'town-resident', color: '#E4A685', ability: "Town Residents are eager to help despite always getting picked last. They may not be the best at fighting werewolves... <span>but if you need 'em, they can vote.</span>", winCondition: 'Eliminate Werewolves to save town.', reminder: null, assigned: 0, expansion: false, enabled: true, images: ["town_resident-male", "town_resident-female"], selectedImage: null },
       { name: 'Sheriff', key: 'sheriff', color: '#EBB663', ability: "Sworn to serve, the Sheriff investigates one player each night.  While they learn if the player is a werewolf, other specifics are elusive.", winCondition: 'Eliminate Werewolves to save town.', reminder: 'nightly', assigned: false, expansion: false, enabled: true, images: ["sheriff-male", "sheriff-female"], selectedImage: null },
       { name: 'Doctor', key: 'doctor', color: '#79D0E4', ability: 'The town Doctor takes a hippocratic oath to save one player each night. If successful, they must choose a new patient next time.', winCondition: 'Eliminate Werewolves to save town.', reminder: 'nightly', lastSavedPlayer: null, assigned: false, expansion: false, enabled: true, images: ["doctor-male", "doctor-female"], selectedImage: null },
       { name: 'Vigilante', key: 'vigilante', color: '#C5BFB1', ability: 'Ever inconspicuous, the Vigilante strikes from the cover of night to eliminate one player, and one player only. <span>May their aim be true.</span>', winCondition: 'Eliminate Werewolves to save town.', reminder: null, assigned: false, expansion: false, enabled: true, images: ["vigilante-male", "vigilante-female"], selectedImage: null },
@@ -88,7 +88,7 @@ export default class WerewolfGame {
 
   assignRole(selectedPlayer, roleToAssign) {
     const playerIndex = this.unassignedPlayers.findIndex(player => player.name === selectedPlayer.name);
-    Array.isArray(roleToAssign.assigned) ? roleToAssign.assigned.push(selectedPlayer) : roleToAssign.assigned = selectedPlayer; 
+    roleToAssign.assigned = roleToAssign.key === ('werewolf' | 'town-resident') ? roleToAssign.assigned + 1 : true; 
     this.unassignedPlayers[playerIndex].role = roleToAssign;
     this.assignedPlayers.push(this.unassignedPlayers.splice(playerIndex, 1));
   }
