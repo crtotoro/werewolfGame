@@ -33,7 +33,24 @@ Stories
 Bonus Content:
 - methods for each role action based on reminders to queue morning announcements
 
-html
+Day Phases
+- Morning announcements (if after day 1)
+- Discussion (show time ellapsed)
+- Nominate -> Vote
+
+Night Phases
+- Role Decisions
+  - Werewolves -> kill who? player.protected ? save : kill -> queueMorningAnnouncement
+  - Doctor -> who from !patientList? player.protected -> healed patient? addPatient(player) -> queueMorningAnnouncement
+  - Vigilante -> if(bulletRemaining) kill? who? bulletRemaining = false & player.protected ? -> save : kill -> queueMorningAnnouncement 
+  - Sheriff -> investigate who? -> return werewolf?
+  - Mimic -> if(night = 1) morph into who? -> return role
+  - Overworked Investigator -> if(!folioContents) investigate who? x2 -> return role x2
+  - Rogue -> if(!bloodyKnife) follow who? followedAttacker? kill attacker -> bloodyKnife = true & attacker.protected ? save : kill -> queueMorningAnnouncement
+  - Bodyguard -> if(!principalSaved?) principal who? principal.protected -> defended principal? kill attacker -> principalSaved = true & attacker.protected ? save : kill -> queueMorningAnnouncement  
+  - Witch Doctor -> if(graveyard && !ritualConducted) conduct ritual? resurrect who from graveyard? conductRitual(graveyardPlayer) -> queueMorningAnnouncement
+- Reconcile Outcomes
+- Remove Protected Statuses
 
 
 
