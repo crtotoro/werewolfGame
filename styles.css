@@ -21,7 +21,7 @@
 /* canvas */
 .canvas-container {
   display: grid;
-  grid-template-columns: 768px 1fr;
+  grid-template-columns: auto 1fr;
   grid-template-rows: auto 2rem 1fr;
   overflow: auto;
   gap: 1rem;
@@ -88,7 +88,12 @@
 
 .list-container h2 {
   grid-row: 1;
-  grid-column: 1/span 2;
+  grid-column: 1;
+}
+
+.alert-message {
+  grid-row: 1;
+  grid-column: 2;
 }
 
 .list {
@@ -99,8 +104,19 @@
   gap: .5rem;
 }
 
+.board {
+  grid-row: 3;
+  grid-column: 2;
+  display: grid;
+
+  background: var(--color-dark-accent);
+  border-radius: 2rem;
+
+  padding: 1rem;
+}
+
+
 .list-tile {
-  color: var(--color-light);
   border: 1px solid rgba(255,255,255,.12);
   border-radius: .4em;
   box-shadow: 0px 2px 6px 0px rgba(0, 0, 0,.5);
@@ -109,7 +125,8 @@
   grid-template-columns: auto 1fr auto;
   grid-template-rows: auto auto auto;
   
-  width: min(700px, max-content);
+  max-width: 576px;
+  width: fit-content;
   height: max-content;
 
   padding: .1em;
@@ -120,6 +137,45 @@
   column-gap: 1rem;
 }
 
+.initial-player-tile {
+  display: flex;
+  border-radius: .5rem;
+  width: 300px;
+  gap: 1rem;
+}
+
+.assigned-player-tile {
+  display: grid;
+  grid-template-columns: auto 1fr 20px;
+  grid-template-rows: auto 1fr;
+
+  border-radius: .5rem;
+  column-gap: .5rem;
+
+  align-items: center;
+  width: 300px;
+
+  padding-right: .3rem;
+}
+
+.assigned-player-tile h3 {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.assigned-player-tile button {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.assigned-player-tile p {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.game-player-tile {
+
+}
 
 .input-field {
   border: 3px solid var(--color-action);
@@ -215,6 +271,20 @@
   border-color: var(--color-light-accent);
 }
 
+.icon-btn {
+  
+  background-color: transparent;
+  width: 18px;
+  border: none;
+
+
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  width: 22px;
+}
+
 #expansion {
   font-size: 1.6rem;
   margin: 0 2rem;
@@ -272,7 +342,20 @@
 
 
 
+.role-portrait-small {
+  box-sizing: content-box;
+  width: 64px;
+  height: 64px;
+  border-radius: .5rem;
+  grid-row: 1/span 3;
+  border: 2px solid whitesmoke;
+  transition: all .3s ease-in-out;
+}
 
+.role-portrait-small:hover {
+  width: 128px;
+  height: 128px;
+}
 
 .role-portrait {
   box-sizing: content-box;

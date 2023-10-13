@@ -41,3 +41,5 @@ function darkenHexColor(hex, percent) {
 }
 
 export { lightenHexColor, darkenHexColor };
+
+console.log(darkenHexColor('#f37246', 20))

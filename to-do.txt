@@ -12,31 +12,29 @@ Features:
 *****************************************
 IN PROGRESS
 
-- add player
+- day
+  - Nominate -> Vote
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
 Stories
-  - roll roles
-  - start game
+  - reroll roles
+ 
   - page transition from menu to new game
   - switch to night
   - next day
-  - morning announcements
+  
 
   - eliminate player
-  - assign Mimic morph
-  - 
 
-Bonus Content:
-- methods for each role action based on reminders to queue morning announcements
+
+
 
 Day Phases
-- Morning announcements (if after day 1)
 - Discussion (show time ellapsed)
-- Nominate -> Vote
+
 
 Night Phases
 - Role Decisions
@@ -81,8 +79,8 @@ Done
   - method to assign roles
   - create image for each role
   - choose color for each role
-  
-
+  - start game
+  - Morning Announcements
 
 
 
