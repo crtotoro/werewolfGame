@@ -19,16 +19,20 @@
 }
 
 /* canvas */
+body {
+  background: var(--color-dark);
+}
+
 .canvas-container {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto;
   grid-template-rows: auto 2rem 1fr;
   overflow: auto;
   gap: 1rem;
   padding: 1rem;
   max-height: 100vh;
 
-  background: var(--color-dark);
+  
   color: var(--color-light);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 1.4rem;
@@ -36,7 +40,7 @@
 
 }
 .canvas-container header {
-  grid-column: 1/span 2;
+  grid-column: 1/span 3;
   grid-row: 1;
   display: flex;
   justify-content: center;
@@ -44,7 +48,7 @@
 
 
 #game-setup {
-  grid-column: 1/span 2;
+  grid-column: 1/span 3;
   background: var(--color-dark-accent);
   border-radius: 1rem;
   justify-content: space-evenly;
@@ -104,17 +108,20 @@
   gap: .5rem;
 }
 
-.board {
+.game-board {
   grid-row: 3;
-  grid-column: 2;
+  grid-column: 1/span 3;
   display: grid;
+  grid-template-columns: 1fr 3fr 2fr;
 
-  background: var(--color-dark-accent);
-  border-radius: 2rem;
-
-  padding: 1rem;
+  gap: 1rem;
+  
 }
 
+.timer {
+  display: flex;
+  column-gap: 1rem;
+}
 
 .list-tile {
   border: 1px solid rgba(255,255,255,.12);
@@ -149,7 +156,10 @@
   grid-template-columns: auto 1fr 20px;
   grid-template-rows: auto 1fr;
 
+  border: 1px solid rgba(255,255,255,.12);
   border-radius: .5rem;
+  box-shadow: 0px 2px 6px 0px rgba(0, 0, 0,.5);
+
   column-gap: .5rem;
 
   align-items: center;
@@ -173,8 +183,49 @@
   grid-row: 2;
 }
 
-.game-player-tile {
+.game-active-players {
+  grid-row: 2;
+  grid-column: 1/span 2;
 
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  
+  gap: 1rem;
+}
+
+#instructions {
+  grid-row: 1;
+  grid-column: 1/span 5;
+}
+
+.log {
+  grid-row: 2;
+}
+
+
+
+.game-player-tile {
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto auto;
+
+  row-gap: .5rem;
+  padding: .2rem;
+
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: .5rem;
+  box-shadow: 0px 2px 6px 0px rgba(0, 0, 0,.5);
+
+  width: max-content;
+  height: max-content;
+
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+.game-player-tile:hover {
+  transform: scale(105%);
 }
 
 .input-field {
@@ -315,6 +366,13 @@
   max-height: 2rem;
 }
 
+.popup {
+  display: none;
+  position: absolute;
+  z-index: 999;
+
+}
+
 .role-name {
   font-size: 1.8rem;
 }
@@ -350,6 +408,7 @@
   grid-row: 1/span 3;
   border: 2px solid whitesmoke;
   transition: all .3s ease-in-out;
+  cursor: pointer;
 }
 
 .role-portrait-small:hover {
@@ -365,13 +424,23 @@
   grid-row: 1/span 3;
   border: 3px solid whitesmoke;
   transition: all .3s ease-in-out;
+  cursor: pointer;
 }
+
 .role-portrait:hover {
   width: 256px;
   height: 256px;
 }
 
-
+.player-portrait {
+  box-sizing: content-box;
+  width: 128px;
+  height: 128px;
+  border-radius: .5rem;
+  grid-row: 1/span 3;
+  border: 3px solid whitesmoke;
+  transition: all .3s ease-in-out;
+}
 
 /* toggle button */
 .toggle-btn {

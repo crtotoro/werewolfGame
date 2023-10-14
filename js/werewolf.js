@@ -20,9 +20,9 @@ export default class WerewolfGame {
     this.roles.forEach(role => {
       role.selectedImage = role.images[0];
     });
-    this.potentialRoles = this.roles.filter(role => {
-      this.expansion ? role.enabled && role.name !== 'Town Resident' : !role.expansion && role.enabled; 
-    });
+    // this.potentialRoles = this.roles.filter(role => {
+    //   this.expansion ? role.enabled && role.name !== 'Town Resident' : !role.expansion && role.enabled; 
+    // });
     this.baseTownRoles = this.roles.filter(role => role.name !== 'Werewolf' && role.name !== 'Town Resident' && role.enabled && !role.expansion);
     this.expansionTownRoles = this.roles.filter(role => role.enabled && role.expansion);
     this.gameRoles = [[...this.baseTownRoles], this.expansion ? [...this.expansionTownRoles] : []];
@@ -30,7 +30,11 @@ export default class WerewolfGame {
     this.werewolfCount = werewolfCount ? werewolfCount : this.getWerewolfCount();
     this.day = 1;
     this.night = false;
-    this.votingFor = null;
+    this.nominated = null;
+  }
+
+  get potentialRoles() {
+    return this.expansion ? this.roles.filter(role => role.enabled) : this.roles.filter(role => role.enabled && !role.expansion);
   }
 
   get assignedPlayers() {
@@ -61,6 +65,14 @@ export default class WerewolfGame {
     return this.graveyard.length;
   }
 
+  loadStoredGame(storedGame) {
+    this.expansion = storedGame.expansion;
+    this.players = storedGame.players;
+    this.morningAnnouncements = storedGame.morningAnnouncements;
+    this.day = storedGame.day;
+    this.night = storedGame.night;
+    this.nominated = storedGame.nominated;
+  }
 
   getWerewolfCount() {
     return this.expansion ? Math.ceil(this.playerCount / 4) : Math.ceil(this.playerCount / 5);
@@ -80,6 +92,10 @@ export default class WerewolfGame {
       player.role.key === ('werewolf' | 'town-resident') ? role.assigned-- : role.assigned === false;
     }
     this.players.splice(playerIndex, 1);
+  }
+
+  eliminatePlayer(player) {
+    player.alive = false;
   }
  
   addRole(name, ability, reminder, winCondition = 'Eliminate Werewolves to save town.', expansion = true) {
@@ -162,27 +178,28 @@ export default class WerewolfGame {
   }
 
   getMorningAnnouncements() {
-    const introduction = `As the sun rises over Werewolf Valley, day ${this.day} has begun. There are ${this.livingCount} players remaining.`;
+    const day = `Day ${this.day}`
+    const introduction = `As the sun rises, ${this.livingCount} players step out of their homes.`;
     const announcements = this.morningAnnouncements[this.day - 1].length ? [...this.morningAnnouncements[day - 1]] : `It was a quiet night... rare in these parts.`;  
-    const closing = `Residents gather in the town square to discuss how best to survive another night. They may nominate one player to be eliminated.`;
+    const closing = `Residents gather in the town square to discuss their werewolf problem. They may nominate one player to be eliminated.`;
     // const closing = `The sun sets on Day ${day}. The residents of Werewolf Valley return to their homes, hoping to survive the night.`;
-    return [introduction, announcements, closing]; 
+    return [day, introduction, announcements, closing]; 
   }
 
-  startVote(nominee) {
-    this.votingFor = nominee;
+  startVote(player) {
+    this.nominated = player;
   }
 
   countVotes() {
-    let votesFor = 0;
-    let votesAgainst = 0;
-    this.living.forEach(player => player.vote ? votesFor++ : votesAgainst++);
-    return { nominee: this.votingFor, votesFor: votesFor, votesAgainst: votesAgainst };
+    let votedToEliminate = [];
+    let votedToKeep = [];
+    this.living.forEach(player => player.vote ? votedToEliminate.push(player.name) : votedToKeep.push(player.name));
+    return { nominee: this.nominated.name, eliminate: votedToEliminate, keep: votedToKeep };
   }
 
   resetVotes() {
     this.living.forEach(player => player.vote = null);
-    this.votingFor = null;
+    this.nominated = null;
   }
 
 }

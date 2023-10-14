@@ -3,8 +3,9 @@ import { darkenHexColor } from "./utilities.js";
 
 
 // global variables
-var storedGame = localStorage.getItem("currentGame");
-var currentGame = JSON.parse(storedGame) ? Object.assign(new WerewolfGame(), JSON.parse(storedGame)) : new WerewolfGame();
+var currentGame = new WerewolfGame();
+var storedGameData = JSON.parse(localStorage.getItem("currentGame"));
+if(storedGameData) currentGame.loadStoredGame(storedGameData);
 window.currentGame = currentGame;
 
 
@@ -29,12 +30,12 @@ function newPlayerCard(player) {
   if(player.role) {
     playerCard.className = "assigned-player-tile";
     
-    let rolePortrait = document.createElement("img");
+    const roleName = document.createElement("p");
+    roleName.innerText = `${player.role.name}`;
+
+    const rolePortrait = document.createElement("img");
     rolePortrait.id = `${player.key}-player-img`; rolePortrait.src = `images/${player.role.selectedImage}.png`; rolePortrait.className = "role-portrait-small";
     rolePortrait.addEventListener('click', e => toggleImage(e.target.id));
-
-    let roleName = document.createElement("p");
-    roleName.innerText = `${player.role.name}`;
 
     playerCard.style.background = `linear-gradient(to top left, ${darkenHexColor(player.role.color, 20)}, ${player.role.color})`;
     playerCard.appendChild(rolePortrait); 
@@ -63,10 +64,159 @@ function newPlayerCard(player) {
   return playerCard;
 }
 
+function newDayPlayerCard(player) {
+  const card = document.createElement("div");
+  const portrait = document.createElement("img");
+  const playerName = document.createElement("h3");
+  
+  card.id = `${player.key}`; 
+  card.className = "game-player-tile";
+  card.style.background = `linear-gradient(to top left, ${darkenHexColor(player.role.color, 20)}, ${player.role.color})`
+
+  portrait.src = `/images/${player.role.selectedImage}.png`; 
+  portrait.alt = `${player.name} ${player.role.name} Portrait`; 
+  portrait.className = "player-portrait";
+
+  playerName.innerText = `${player.name}`;
+
+  card.appendChild(portrait);
+  card.appendChild(playerName);
+  if(!currentGame.night) {
+    card.addEventListener("click", e => {
+      const instructions = document.getElementById("instructions");
+      instructions.innerText = `${player.name} nominated for elimination. Select Start Vote to confirm.`;
+      newStartVoteBtn(player);
+    })
+  }
+  return card;
+}
+
+function newStartVoteBtn(player) {
+  const setupBar = document.getElementById("game-setup");
+  const existingStartVoteBtn = document.getElementById("vote-btn");
+  if(existingStartVoteBtn) existingStartVoteBtn.remove();
+  const startVoteBtn = document.createElement("input");
+  startVoteBtn.id = "vote-btn"; startVoteBtn.type = "button"; startVoteBtn.className = "primary-btn"; startVoteBtn.value = "Start Vote";
+  startVoteBtn.addEventListener("click", () => toggleVoting(player));
+  setupBar.appendChild(startVoteBtn);
+  newCancelVoteBtn();
+}
+
+function newCancelVoteBtn() {
+  const setupBar = document.getElementById("game-setup");
+  const existingCancelVoteBtn = document.getElementById("cancel-vote-btn");
+  if(!existingCancelVoteBtn) {
+    const cancelVoteBtn = document.createElement("input");
+    cancelVoteBtn.id = "cancel-vote-btn"; cancelVoteBtn.type = "button"; cancelVoteBtn.className = "primary-btn"; cancelVoteBtn.value = "Cancel Voting";
+    cancelVoteBtn.addEventListener("click", () => cancelVoting());
+    setupBar.appendChild(cancelVoteBtn);
+  }
+}
+
+function cancelVoting() {
+  const voteButton = document.getElementById("vote-btn");
+  if(voteButton.value === "End Voting") postAnnouncement("Voting canceled.");
+  currentGame.resetVotes();
+  document.getElementById("instructions").remove();
+  voteButton.remove();
+  refreshPlayerStatuses();
+  document.getElementById("cancel-vote-btn").remove();
+}
+
+function newDayVotingCard(player) {
+  const card = document.createElement("div");
+  const portrait = document.createElement("img");
+  const playerName = document.createElement("h3");
+  const eliminateBtn = document.createElement("button");
+  const keepBtn = document.createElement("button");
+  const eliminateImage = document.createElement("img");
+  const keepImage = document.createElement("img");
+  
+  card.id = `${player.key}`; 
+  card.className = "game-player-tile";
+  card.style.background = `linear-gradient(to top left, ${darkenHexColor(player.role.color, 20)}, ${player.role.color})`
+
+  portrait.src = `/images/${player.role.selectedImage}.png`; 
+  portrait.alt = `${player.name} ${player.role.name} Portrait`; 
+  portrait.className = "player-portrait";
+
+  playerName.innerText = `${player.name}`;
+
+  eliminateBtn.className = "icon-btn";
+  eliminateImage.src = "/icons/vote-eliminate-inactive.svg";
+  eliminateBtn.appendChild(eliminateImage);
+  keepBtn.className = "icon-btn"
+  keepImage.src = "/icons/vote-keep-inactive.svg";
+  keepBtn.appendChild(keepImage);
+
+  eliminateBtn.addEventListener("click", e => {
+    player.vote = true;
+    eliminateImage.src = "/icons/vote-eliminate-active.svg";
+    keepImage.src = "/icons/vote-keep-inactive.svg";
+  });
+  keepBtn.addEventListener("click", e => {
+    player.vote = false;
+    keepImage.src = "/icons/vote-keep-active.svg";
+    eliminateImage.src = "/icons/vote-eliminate-inactive.svg";
+  })
+
+  card.appendChild(portrait);
+  card.appendChild(playerName);
+  card.appendChild(eliminateBtn);
+  card.appendChild(keepBtn);
+  return card;
+}
+
+
+
+function toggleVoting(player) {
+  const startVoteBtn = document.getElementById("vote-btn");
+  const cancelVoteBtn = document.getElementById("cancel-vote-btn")
+  const activeList = document.getElementById("active-players-list");
+  const instructions = document.getElementById("instructions");
+  if(startVoteBtn.value === "Start Vote") {
+    currentGame.startVote(player);
+    while(activeList.lastChild !== instructions) activeList.removeChild(activeList.lastChild);
+    currentGame.living.forEach(player => activeList.appendChild(newDayVotingCard(player)));
+    postAnnouncement(`Voting to eliminate ${currentGame.nominated.name}...`);
+    instructions.innerText = `Voting to eliminate ${player.name} is open. Register each player's vote below. Minus to eliminate, plus to keep. Select End Vote to tally results.`;
+    startVoteBtn.value = "End Voting";
+  } else if(startVoteBtn.value === "End Voting") {
+    tallyVotes();
+    
+    instructions.innerText = "Voting has closed. Nominate another player or proceed to night when ready."
+    startVoteBtn.remove();
+    cancelVoteBtn.remove();
+  }
+}
+
+function tallyVotes() {
+  const voteResults = currentGame.countVotes();
+  if(voteResults.eliminate.length > voteResults.keep.length) {
+    currentGame.eliminatePlayer(currentGame.nominated); 
+    postAnnouncement(`Vote passed. ${voteResults.nominee} has been eliminated.`);}
+  else postAnnouncement(`Vote failed. ${voteResults.nominee} remains in town.`);
+  currentGame.resetVotes();
+  refreshPlayerStatuses();
+} 
+
+
+
+function postAnnouncement(announcement) {
+  const announcementBoard = document.getElementById("event-log");
+  const newAnnouncement = document.createElement("p");
+  newAnnouncement.innerText = announcement;
+  if(/(day|night)\s[0-9]/i.test(announcement)) {
+    newAnnouncement.style.fontWeight = "800";
+    newAnnouncement.style.textDecoration = "underline";
+  }
+  announcementBoard.appendChild(newAnnouncement);
+}
+
+
 function newRoleCard(role) {
   let roleCard = document.createElement("div");
   roleCard.id = `${role.key}-role`; roleCard.className = "list-tile"; roleCard.style.background = `linear-gradient(to top left, ${darkenHexColor(role.color, 20)}, ${role.color})`;
-  console.log(role.name, role.color)
   let rolePortrait = document.createElement("img");
   rolePortrait.id = `${role.key}-role-img`; rolePortrait.src = `images/${role.selectedImage}.png`; rolePortrait.className = "role-portrait";
   rolePortrait.addEventListener('click', e => toggleImage(e.target.id));
@@ -95,14 +245,23 @@ function refreshPlayerList() {
 }
 
 function refreshPlayerStatuses() {
-  // refresh active player list
   const activeList = document.getElementById("active-players-list"); 
-  while(activeList.firstChild) activeList.removeChild(activeList.firstChild);
-  if(currentGame.living) currentGame.living.forEach(player => activeList.appendChild(newPlayerCard(player)));
+  const graveyardList = document.getElementById("graveyard-list");
+  const existingInstructions = document.getElementById("instructions");
+  const instructions = document.createElement("p");
+  const dayInstructions = "Click a player card to nominate for elimination or proceed to night when ready.";
+  const nightInstructions = "Select the ability/target for each player listed. If their ability is optional, you can continue to the next day without using their ability.";
+  
+  instructions.id = "instructions";
+  instructions.innerText = currentGame.night ? nightInstructions : dayInstructions;
+    
+  // refresh active player list
+  while(activeList.lastChild !== existingInstructions) activeList.removeChild(activeList.lastChild);
+  if(!existingInstructions) activeList.appendChild(instructions);
+  if(currentGame.living) currentGame.living.forEach(player => activeList.appendChild(newDayPlayerCard(player)));
 
   // refresh graveyard list
-  const graveyardList = document.getElementById("graveyard-list");
-  while(graveyardList.firstChild) graveyard.removeChild(graveyardList.firstChild);
+  while(graveyardList.firstChild) graveyardList.removeChild(graveyardList.firstChild);
   if(currentGame.graveyard) currentGame.graveyard.forEach(player => graveyardList.append(newPlayerCard(player)));
 }
 
@@ -137,30 +296,39 @@ function toggleImage(imageId) {
 }
 
 function beginDay() {
-  const morningAnnouncements = currentGame.getMorningAnnouncements();
-  for(let i = 0; i < morningAnnouncements.length; i++) {
-    let announcement = document.createElement("p");
-    announcement.innerText = morningAnnouncements[i];
-    document.getElementById("announcement-board").appendChild(announcement);
-  }
-  let dayTimer = document.createElement("p");
+  currentGame.getMorningAnnouncements().forEach(announcement => postAnnouncement(announcement));
+  const dayTimer = document.createElement("p");
   dayTimer.id = "day-timer";
-  document.getElementById("announcement-board").appendChild(dayTimer);
+  document.getElementById("game-setup").appendChild(dayTimer);
+  addDayNightTimer();
   
-  const startTime = new Date().getTime();
-  setInterval(updateDayTimer, 1000, startTime)
 
 
 }
 
+function addDayNightTimer() {
+  const gameSetup = document.getElementById("game-setup");
+  const timeElapsedContainer = document.createElement("div");
+  const dayNightIcon = document.createElement("img");
+  const timer = document.createElement("p");
+  const startTime = new Date().getTime();
+  timeElapsedContainer.id = "time-elapsed"; timeElapsedContainer.className = "timer";
+  dayNightIcon.src = currentGame.night ? "/icons/moon-light.svg" : "/icons/sun-light.svg";
+  dayNightIcon.alt = currentGame.night ? "Moon" : "Sun";
+  timer.id = "day-night-timer"
+  setInterval(updateTimer, 1000, startTime)
 
-function updateDayTimer(startTime) {
-  const timer = document.getElementById("day-timer");
+  timeElapsedContainer.appendChild(dayNightIcon); timeElapsedContainer.appendChild(timer);
+  gameSetup.appendChild(timeElapsedContainer);
+}
+
+function updateTimer(startTime) {
+  const timer = document.getElementById("day-night-timer");
   const now = new Date().getTime();
   const elapsed = now - startTime;
   const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-  timer.innerText = `Daytime elapsed: ${minutes ? minutes + 'm ': ''}${seconds}s`;
+  timer.innerText = `${minutes ? minutes + 'm ': ''}${seconds}s`;
 }
 
 // at page launch
@@ -232,7 +400,10 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (window.location.pathname === '/game.html') {
     refreshPlayerStatuses();
     beginDay();
-  }});
+
+
+}});
+
 
 // window.BeforeUnloadEvent = () => {
 //   localStorage.setItem("currentGame", JSON.stringify(currentGame));
