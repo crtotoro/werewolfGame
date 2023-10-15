@@ -19,7 +19,7 @@ function lightenHexColor(hex, percent) {
       Math.round(b).toString(16).padStart(2, '0');
 }
 
-function darkenHexColor(hex, percent) {
+export function darkenHexColor(hex, percent) {
   // Convert hex to RGB
   let r = parseInt(hex.substring(1, 3), 16);
   let g = parseInt(hex.substring(3, 5), 16);
@@ -39,5 +39,3 @@ function darkenHexColor(hex, percent) {
       Math.round(g).toString(16).padStart(2, '0') + 
       Math.round(b).toString(16).padStart(2, '0');
 }
-
-export { lightenHexColor, darkenHexColor };

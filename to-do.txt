@@ -12,15 +12,14 @@ Features:
 *****************************************
 IN PROGRESS
 
-- day
-  - Nominate -> Vote
+- convert players to Player class
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
 Stories
-  - reroll roles
+  
  
   - page transition from menu to new game
   - switch to night
@@ -37,6 +36,10 @@ Day Phases
 
 
 Night Phases
+- display options for available roles
+- functionality behind the options
+
+
 - Role Decisions
   - Werewolves -> kill who? player.protected ? save : kill -> queueMorningAnnouncement
   - Doctor -> who from !patientList? player.protected -> healed patient? addPatient(player) -> queueMorningAnnouncement
@@ -81,7 +84,7 @@ Done
   - choose color for each role
   - start game
   - Morning Announcements
-
+  - convert roles to Role class
 
 
 

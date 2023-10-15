@@ -1,5 +1,4 @@
-import WerewolfGame from "./werewolf.js";
-import { darkenHexColor } from "./utilities.js";
+import { WerewolfGame, darkenHexColor } from "./index.js";
 
 
 // global variables
@@ -13,7 +12,7 @@ window.currentGame = currentGame;
 function addPlayer() {
   let playerName = document.getElementById("new-player").value;
   if(!playerName) return;
-  currentGame.addPlayers(playerName);
+  currentGame.addPlayer(playerName);
   refreshPlayerList();
   document.getElementById("new-player").value = '';
 }
@@ -193,7 +192,7 @@ function toggleVoting(player) {
 function tallyVotes() {
   const voteResults = currentGame.countVotes();
   if(voteResults.eliminate.length > voteResults.keep.length) {
-    currentGame.eliminatePlayer(currentGame.nominated); 
+    currentGame.nominated.eliminate();
     postAnnouncement(`Vote passed. ${voteResults.nominee} has been eliminated.`);}
   else postAnnouncement(`Vote failed. ${voteResults.nominee} remains in town.`);
   currentGame.resetVotes();
@@ -281,17 +280,12 @@ function refreshRoleList() {
 }
 
 function toggleImage(imageId) {
-  let roleKey = null; 
-  let playerKey = null;
+  let roleKey, playerKey = null;
 
   /role/i.test(imageId) ? roleKey = imageId.replace('-role-img','') : playerKey = imageId.replace('-player-img','');
 
   let foundRole = roleKey ? currentGame.roles.find(role => role.key === roleKey) : currentGame.players.find(player => player.key === playerKey).role;
-
-  let currentIndex = foundRole.images.indexOf(foundRole.selectedImage);
-  let nextIndex = (currentIndex + 1) % foundRole.images.length;
-
-  foundRole.selectedImage = foundRole.images[nextIndex];
+  foundRole.toggleSelectedImage();
   document.getElementById(imageId).src = `images/${foundRole.selectedImage}.png`;  
 }
 
