@@ -126,13 +126,14 @@ function newDayVotingCard(player) {
   const card = document.createElement("div");
   const portrait = document.createElement("img");
   const playerName = document.createElement("h3");
+  const votingFor = document.createElement("p");
   const eliminateBtn = document.createElement("button");
   const keepBtn = document.createElement("button");
   const eliminateImage = document.createElement("img");
   const keepImage = document.createElement("img");
   
   card.id = `${player.key}`; 
-  card.className = "game-player-tile";
+  card.className = "voting-player-tile";
   card.style.background = `linear-gradient(to top left, ${darkenHexColor(player.role.color, 20)}, ${player.role.color})`
 
   portrait.src = `./images/${player.role.selectedImage}.png`; 
@@ -140,6 +141,8 @@ function newDayVotingCard(player) {
   portrait.className = "player-portrait";
 
   playerName.innerText = `${player.name}`;
+
+  votingFor.innerText = `Eliminate ${currentGame.nominated.name}?`
 
   eliminateBtn.className = "icon-btn";
   eliminateImage.src = "./icons/vote-eliminate-inactive.svg";
@@ -161,6 +164,7 @@ function newDayVotingCard(player) {
 
   card.appendChild(portrait);
   card.appendChild(playerName);
+  card.appendChild(votingFor);
   card.appendChild(eliminateBtn);
   card.appendChild(keepBtn);
   return card;
