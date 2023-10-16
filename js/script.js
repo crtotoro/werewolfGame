@@ -396,6 +396,7 @@ function launchGame() {
   beginDay();
 }
 
+
 const currentPath = window.location.pathname;
 document.addEventListener('DOMContentLoaded', () => {
   console.log("current pathname =", currentPath);
