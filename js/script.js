@@ -396,13 +396,13 @@ function launchGame() {
   beginDay();
 }
 
+const currentPath = window.location.pathname;
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.location.pathname === './game.html' || '/werewolfGame/game.html') {
-    console.log("launching game content");
-    launchGame();
-  } else if(window.location.pathname === '/index.html' || './' || '/werewolfGame/') {
-    console.log("launching index content");
+  console.log("current pathname =", currentPath);
+  if(currentPath === '/index.html' || currentPath.endsWith('/werewolfGame/')) {
     launchIndex();
+  } else if(currentPath === '/game.html' || currentPath.endsWith('/werewolfGame/game.html')) {
+    launchGame();
   }
 });
 
