@@ -327,13 +327,41 @@ function updateTimer(startTime) {
 
 // at page launch
 
-document.addEventListener('DOMContentLoaded', () => {
-  
-  if (window.location.pathname === '/index.html' || '/Werewolf/') {
-    refreshRoleList();
-    if(currentGame.players.length) {
-      refreshPlayerList();
-      if(currentGame.playerCount >= 4 && !currentGame.unassignedPlayers.length) {
+function launchIndex() {
+  refreshRoleList();
+  if(currentGame.players.length) {
+    refreshPlayerList();
+    if(currentGame.playerCount >= 4 && !currentGame.unassignedPlayers.length) {
+      let startGameBtn = document.createElement("input");
+      startGameBtn.id = "start-game-btn"; startGameBtn.type = "button"; startGameBtn.className = "primary-btn"; startGameBtn.value = "Start Game";
+      startGameBtn.addEventListener("click", () => {
+        localStorage.setItem("currentGame", JSON.stringify(currentGame));
+        window.location.href = "game.html";
+      });
+      document.getElementById("game-setup").appendChild(startGameBtn);
+      document.getElementById("assign-roles-btn").value = "Reset Roles";
+    }
+  }
+  // game expansion toggle button
+  document.getElementById("expansion-toggle").addEventListener('change', () => {
+    currentGame.toggleExpansion();
+    refreshRoleList(); 
+  });
+
+  // add player button
+  document.getElementById("add-player-btn").addEventListener("click", addPlayer);
+  document.getElementById("new-player").addEventListener("keyup", e => {if(e.key === "Enter" || event.keyCode === 13) addPlayer()});
+  // assign/reset roles
+  document.getElementById("game-setup").addEventListener("click", e => {
+    if(e.target.id === "assign-roles-btn" && e.target.value === "Assign Roles") {
+      let alertMessage = document.querySelector(".alert-message");
+      if(currentGame.playerCount >= 4) {
+        // remove alert message if displayed
+        alertMessage ? document.getElementById("players").removeChild(alertMessage) : null;
+        currentGame.refreshGameRoles();
+        currentGame.assignRoles();
+        refreshPlayerList();
+    
         let startGameBtn = document.createElement("input");
         startGameBtn.id = "start-game-btn"; startGameBtn.type = "button"; startGameBtn.className = "primary-btn"; startGameBtn.value = "Start Game";
         startGameBtn.addEventListener("click", () => {
@@ -341,62 +369,42 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.href = "game.html";
         });
         document.getElementById("game-setup").appendChild(startGameBtn);
-        document.getElementById("assign-roles-btn").value = "Reset Roles";
-      }
-    }
-    // game expansion toggle button
-    document.getElementById("expansion-toggle").addEventListener('change', () => {
-      currentGame.toggleExpansion();
-      refreshRoleList(); 
-    });
-
-    // add player button
-    document.getElementById("add-player-btn").addEventListener("click", addPlayer);
-    document.getElementById("new-player").addEventListener("keyup", e => {if(e.key === "Enter" || event.keyCode === 13) addPlayer()});
-    // assign/reset roles
-    document.getElementById("game-setup").addEventListener("click", e => {
-      if(e.target.id === "assign-roles-btn" && e.target.value === "Assign Roles") {
-        let alertMessage = document.querySelector(".alert-message");
-        if(currentGame.playerCount >= 4) {
-          // remove alert message if displayed
-          alertMessage ? document.getElementById("players").removeChild(alertMessage) : null;
-          currentGame.refreshGameRoles();
-          currentGame.assignRoles();
-          refreshPlayerList();
-      
-          let startGameBtn = document.createElement("input");
-          startGameBtn.id = "start-game-btn"; startGameBtn.type = "button"; startGameBtn.className = "primary-btn"; startGameBtn.value = "Start Game";
-          startGameBtn.addEventListener("click", () => {
-            localStorage.setItem("currentGame", JSON.stringify(currentGame));
-            window.location.href = "game.html";
-          });
-          document.getElementById("game-setup").appendChild(startGameBtn);
-          e.target.value = "Reset Roles";
+        e.target.value = "Reset Roles";
+      } else {
+        // display alert message to add players
+        if(alertMessage) {
+          alertMessage.innerText = `Add at least ${4 - currentGame.playerCount} more players.`;
         } else {
-          // display alert message to add players
-          if(alertMessage) {
-            alertMessage.innerText = `Add at least ${4 - currentGame.playerCount} more players.`;
-          } else {
-            alertMessage = document.createElement("p");
-            alertMessage.className = "alert-message"; alertMessage.innerText = `Add at least ${4 - currentGame.playerCount} more players.`
-            document.getElementById("players").appendChild(alertMessage);
-          }
-          
+          alertMessage = document.createElement("p");
+          alertMessage.className = "alert-message"; alertMessage.innerText = `Add at least ${4 - currentGame.playerCount} more players.`
+          document.getElementById("players").appendChild(alertMessage);
         }
         
-      } else if (e.target.id === "assign-roles-btn" && e.target.value === "Reset Roles") {
-        currentGame.resetRoleAssignments();
-        refreshPlayerList();
-        document.getElementById("start-game-btn").remove();
-        e.target.value = "Assign Roles";
       }
-    });
-  } else if (window.location.pathname === '/game.html' || '/Werewolf/game.html') {
-    refreshPlayerStatuses();
-    beginDay();
+      
+    } else if (e.target.id === "assign-roles-btn" && e.target.value === "Reset Roles") {
+      currentGame.resetRoleAssignments();
+      refreshPlayerList();
+      document.getElementById("start-game-btn").remove();
+      e.target.value = "Assign Roles";
+    }
+  });
+}
 
+function launchGame() {
+  refreshPlayerStatuses();
+  beginDay();
+}
 
-}});
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.location.pathname === '/game.html' || '/Werewolf/game.html') {
+    console.log("launching game content");
+    launchGame();
+  } else if(window.location.pathname === '/index.html' || '/Werewolf/') {
+    console.log("launching index content");
+    launchIndex();
+  }
+});
 
 
 // window.BeforeUnloadEvent = () => {
