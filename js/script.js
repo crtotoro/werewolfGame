@@ -329,7 +329,7 @@ function updateTimer(startTime) {
 
 document.addEventListener('DOMContentLoaded', () => {
   
-  if (window.location.pathname === '/index.html') {
+  if (window.location.pathname === '/index.html' || '/Werewolf/') {
     refreshRoleList();
     if(currentGame.players.length) {
       refreshPlayerList();
@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.value = "Assign Roles";
       }
     });
-  } else if (window.location.pathname === '/game.html') {
+  } else if (window.location.pathname === '/game.html' || '/Werewolf/game') {
     refreshPlayerStatuses();
     beginDay();
 
