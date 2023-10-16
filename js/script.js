@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.target.value = "Assign Roles";
       }
     });
-  } else if (window.location.pathname === '/game.html' || '/Werewolf/game') {
+  } else if (window.location.pathname === '/game.html' || '/Werewolf/game.html') {
     refreshPlayerStatuses();
     beginDay();
 
