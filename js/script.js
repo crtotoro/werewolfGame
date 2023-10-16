@@ -1,4 +1,4 @@
-import { WerewolfGame, darkenHexColor } from "./index.js";
+import { WerewolfGame, Role, Player, darkenHexColor } from "./index.js";
 
 
 // global variables
@@ -43,7 +43,7 @@ function newPlayerCard(player) {
     
   } else {
     playerCard.className = "initial-player-tile";
-    if(window.location.pathname === "/index.html") {
+    if(window.location.pathname === "/index.html" || "/werewolfGame/") {
       let deletePlayerBtn = document.createElement("button");
       deletePlayerBtn.className = "icon-btn"; 
       deletePlayerBtn.addEventListener("click", e => {
@@ -397,10 +397,10 @@ function launchGame() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.location.pathname === '/game.html' || '/Werewolf/game.html') {
+  if (window.location.pathname === './game.html') {
     console.log("launching game content");
     launchGame();
-  } else if(window.location.pathname === '/index.html' || '/Werewolf/') {
+  } else if(window.location.pathname === '/index.html' || './' || '/werewolfGame/') {
     console.log("launching index content");
     launchIndex();
   }
