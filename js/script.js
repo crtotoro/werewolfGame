@@ -53,7 +53,7 @@ function newPlayerCard(player) {
       });
       let deleteIcon = document.createElement("img");
       
-      deleteIcon.src = "/icons/delete-action.svg"; deleteIcon.alt = "Delete Player Button";
+      deleteIcon.src = "../icons/delete-action.svg"; deleteIcon.alt = "Delete Player Button";
       deletePlayerBtn.appendChild(deleteIcon);
       playerCard.appendChild(deletePlayerBtn);
     }
@@ -72,7 +72,7 @@ function newDayPlayerCard(player) {
   card.className = "game-player-tile";
   card.style.background = `linear-gradient(to top left, ${darkenHexColor(player.role.color, 20)}, ${player.role.color})`
 
-  portrait.src = `/images/${player.role.selectedImage}.png`; 
+  portrait.src = `./images/${player.role.selectedImage}.png`; 
   portrait.alt = `${player.name} ${player.role.name} Portrait`; 
   portrait.className = "player-portrait";
 
@@ -135,28 +135,28 @@ function newDayVotingCard(player) {
   card.className = "game-player-tile";
   card.style.background = `linear-gradient(to top left, ${darkenHexColor(player.role.color, 20)}, ${player.role.color})`
 
-  portrait.src = `/images/${player.role.selectedImage}.png`; 
+  portrait.src = `./images/${player.role.selectedImage}.png`; 
   portrait.alt = `${player.name} ${player.role.name} Portrait`; 
   portrait.className = "player-portrait";
 
   playerName.innerText = `${player.name}`;
 
   eliminateBtn.className = "icon-btn";
-  eliminateImage.src = "/icons/vote-eliminate-inactive.svg";
+  eliminateImage.src = "./icons/vote-eliminate-inactive.svg";
   eliminateBtn.appendChild(eliminateImage);
   keepBtn.className = "icon-btn"
-  keepImage.src = "/icons/vote-keep-inactive.svg";
+  keepImage.src = "./icons/vote-keep-inactive.svg";
   keepBtn.appendChild(keepImage);
 
   eliminateBtn.addEventListener("click", e => {
     player.vote = true;
-    eliminateImage.src = "/icons/vote-eliminate-active.svg";
-    keepImage.src = "/icons/vote-keep-inactive.svg";
+    eliminateImage.src = "./icons/vote-eliminate-active.svg";
+    keepImage.src = "./icons/vote-keep-inactive.svg";
   });
   keepBtn.addEventListener("click", e => {
     player.vote = false;
-    keepImage.src = "/icons/vote-keep-active.svg";
-    eliminateImage.src = "/icons/vote-eliminate-inactive.svg";
+    keepImage.src = "./icons/vote-keep-active.svg";
+    eliminateImage.src = "./icons/vote-eliminate-inactive.svg";
   })
 
   card.appendChild(portrait);
@@ -307,7 +307,7 @@ function addDayNightTimer() {
   const timer = document.createElement("p");
   const startTime = new Date().getTime();
   timeElapsedContainer.id = "time-elapsed"; timeElapsedContainer.className = "timer";
-  dayNightIcon.src = currentGame.night ? "/icons/moon-light.svg" : "/icons/sun-light.svg";
+  dayNightIcon.src = currentGame.night ? "./icons/moon-light.svg" : "./icons/sun-light.svg";
   dayNightIcon.alt = currentGame.night ? "Moon" : "Sun";
   timer.id = "day-night-timer"
   setInterval(updateTimer, 1000, startTime)
