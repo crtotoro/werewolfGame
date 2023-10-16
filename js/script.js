@@ -397,7 +397,7 @@ function launchGame() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.location.pathname === './game.html') {
+  if (window.location.pathname === './game.html' || '/werewolfGame/game.html') {
     console.log("launching game content");
     launchGame();
   } else if(window.location.pathname === '/index.html' || './' || '/werewolfGame/') {
