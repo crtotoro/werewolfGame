@@ -3,9 +3,9 @@ import { WerewolfGame, Role, Player, darkenHexColor } from "./index.js";
 
 // global variables
 var currentGame = new WerewolfGame();
+window.currentGame = currentGame;
 var storedGameData = JSON.parse(localStorage.getItem("currentGame"));
 if(storedGameData) currentGame.loadStoredGame(storedGameData);
-window.currentGame = currentGame;
 
 
 // crud functions
@@ -53,7 +53,7 @@ function newPlayerCard(player) {
       });
       let deleteIcon = document.createElement("img");
       
-      deleteIcon.src = "../icons/delete-action.svg"; deleteIcon.alt = "Delete Player Button";
+      deleteIcon.src = "./icons/delete-action.svg"; deleteIcon.alt = "Delete Player Button";
       deletePlayerBtn.appendChild(deleteIcon);
       playerCard.appendChild(deletePlayerBtn);
     }
