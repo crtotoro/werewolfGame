@@ -410,5 +410,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-export { refreshPlayerList, toggleImage };
+window.refreshPlayerList = () => refreshPlayerList();
