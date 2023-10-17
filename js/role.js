@@ -15,6 +15,7 @@ export class Role {
 
   static fromData(data) {
     let role = new Role(data);
+    role.selectedImage = data.selectedImage; 
     return role;
   }
 

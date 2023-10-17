@@ -47,13 +47,13 @@ export class WerewolfGame {
     return this.graveyard.length;
   }
 
-  loadStoredGame(storedGame) {
-    this.expansion = storedGame.expansion;
-    this.players = storedGame.players.map(playerData => Player.fromData(playerData));
-    this.roles = storedGame.roles.map(roleData => Role.fromData(roleData));
-    this.morningAnnouncements = storedGame.morningAnnouncements;
-    this.day = storedGame.day;
-    this.night = storedGame.night;
+  loadSavedGame(savedGame) {
+    this.expansion = savedGame.expansion;
+    this.roles = savedGame.roles.map(roleData => Role.fromData(roleData));
+    this.players = savedGame.players.map(playerData => Player.fromData(playerData, this));
+    this.morningAnnouncements = savedGame.morningAnnouncements;
+    this.day = savedGame.day;
+    this.night = savedGame.night;
   }
 
   getWerewolfCount() {

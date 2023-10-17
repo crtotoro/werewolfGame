@@ -4,9 +4,8 @@ import { WerewolfGame, Role, Player, darkenHexColor } from "./index.js";
 // global variables
 var currentGame = new WerewolfGame();
 window.currentGame = currentGame;
-var storedGameData = JSON.parse(localStorage.getItem("currentGame"));
-if(storedGameData) currentGame.loadStoredGame(storedGameData);
-
+loadGame();
+loadPageContent();
 
 // crud functions
 function addPlayer() {
@@ -15,6 +14,16 @@ function addPlayer() {
   currentGame.addPlayer(playerName);
   refreshPlayerList();
   document.getElementById("new-player").value = '';
+}
+
+function saveGame() {
+  localStorage.setItem("currentGame", JSON.stringify(currentGame));
+}
+
+function loadGame() {
+  const gameData = JSON.parse(localStorage.getItem("currentGame"));
+  if(gameData) currentGame.loadSavedGame(gameData);
+  else console.log("No game data found. Starting new game.");
 }
 
 // render functions
@@ -46,9 +55,9 @@ function newPlayerCard(player) {
     if(window.location.pathname === "/index.html" || "/werewolfGame/") {
       let deletePlayerBtn = document.createElement("button");
       deletePlayerBtn.className = "icon-btn"; 
-      deletePlayerBtn.addEventListener("click", e => {
+      deletePlayerBtn.addEventListener("click", () => {
         currentGame.deletePlayer(`${player.key}`);
-        localStorage.setItem("currentGame", JSON.stringify(currentGame));
+        saveGame();
         refreshPlayerList();
       });
       let deleteIcon = document.createElement("img");
@@ -81,7 +90,7 @@ function newDayPlayerCard(player) {
   card.appendChild(portrait);
   card.appendChild(playerName);
   if(!currentGame.night) {
-    card.addEventListener("click", e => {
+    card.addEventListener("click", () => {
       const instructions = document.getElementById("instructions");
       instructions.innerText = `${player.name} nominated for elimination. Select Start Vote to confirm.`;
       newStartVoteBtn(player);
@@ -151,13 +160,16 @@ function newDayVotingCard(player) {
   keepImage.src = "./icons/vote-keep-inactive.svg";
   keepBtn.appendChild(keepImage);
 
-  eliminateBtn.addEventListener("click", e => {
-    player.vote = true;
+  eliminateBtn.addEventListener("click", () => {
+    player.castVote(true);
+    hasVoted(player);
+    
     eliminateImage.src = "./icons/vote-eliminate-active.svg";
     keepImage.src = "./icons/vote-keep-inactive.svg";
   });
-  keepBtn.addEventListener("click", e => {
-    player.vote = false;
+  keepBtn.addEventListener("click", () => {
+    player.castVote(false);
+    hasVoted(player);
     keepImage.src = "./icons/vote-keep-active.svg";
     eliminateImage.src = "./icons/vote-eliminate-inactive.svg";
   })
@@ -170,6 +182,17 @@ function newDayVotingCard(player) {
   return card;
 }
 
+function hasVoted(player) {
+  const playerCardClasses = document.getElementById(`${player.key}`).classList;
+  if(player.vote) {
+    if(playerCardClasses.contains("voted-against")) playerCardClasses.replace("voted-against", "voted-for");
+    else if(!playerCardClasses.contains("voted-for")) playerCardClasses.add("voted-for");
+  } else {
+    if(playerCardClasses.contains("voted-for")) playerCardClasses.replace("voted-for", "voted-against");
+    else if(!playerCardClasses.contains("voted-against")) playerCardClasses.add("voted-against");
+  }
+   
+}
 
 
 function toggleVoting(player) {
@@ -293,68 +316,88 @@ function toggleImage(imageId) {
   document.getElementById(imageId).src = `images/${foundRole.selectedImage}.png`;  
 }
 
-function beginDay() {
-  currentGame.getMorningAnnouncements().forEach(announcement => postAnnouncement(announcement));
-  const dayTimer = document.createElement("p");
-  dayTimer.id = "day-timer";
-  document.getElementById("game-setup").appendChild(dayTimer);
-  addDayNightTimer();
-  
-
-
+function addStartButton() {
+  const startGameBtn = document.createElement("input");
+  startGameBtn.id = "start-game-btn"; startGameBtn.type = "button"; startGameBtn.className = "primary-btn"; startGameBtn.value = "Start Game";
+  startGameBtn.addEventListener("click", () => {
+    saveGame();
+    window.location.href = "game.html";
+  });
+  document.getElementById("game-setup").appendChild(startGameBtn);
 }
 
-function addDayNightTimer() {
+// append day/night icon and time elapsed
+function displayElapsedTime() {
   const gameSetup = document.getElementById("game-setup");
-  const timeElapsedContainer = document.createElement("div");
-  const dayNightIcon = document.createElement("img");
-  const timer = document.createElement("p");
-  const startTime = new Date().getTime();
-  timeElapsedContainer.id = "time-elapsed"; timeElapsedContainer.className = "timer";
-  dayNightIcon.src = currentGame.night ? "./icons/moon-light.svg" : "./icons/sun-light.svg";
-  dayNightIcon.alt = currentGame.night ? "Moon" : "Sun";
-  timer.id = "day-night-timer"
-  setInterval(updateTimer, 1000, startTime)
-
-  timeElapsedContainer.appendChild(dayNightIcon); timeElapsedContainer.appendChild(timer);
-  gameSetup.appendChild(timeElapsedContainer);
+  
+  const dayOrNightIcon = document.createElement("img");
+  dayOrNightIcon.src = currentGame.night ? "./icons/moon-light.svg" : "./icons/sun-light.svg";
+  dayOrNightIcon.alt = currentGame.night ? "Moon" : "Sun";
+  
+  const elapsedTime = document.createElement("p");
+  elapsedTime.id = "day-night-timer";
+  setInterval(updateTimer, 1000, new Date().getTime());
+  
+  // nest icon and elapsed time in a div
+  const elapsedTimeDiv = document.createElement("div");
+  elapsedTimeDiv.id = "time-elapsed"; 
+  elapsedTimeDiv.className = "timer";
+  elapsedTimeDiv.appendChild(dayOrNightIcon); 
+  elapsedTimeDiv.appendChild(elapsedTime);
+  
+  gameSetup.appendChild(elapsedTimeDiv);
 }
 
 function updateTimer(startTime) {
-  const timer = document.getElementById("day-night-timer");
+  const elapsedTime = document.getElementById("day-night-timer");
+
   const now = new Date().getTime();
   const elapsed = now - startTime;
   const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-  timer.innerText = `${minutes ? minutes + 'm ': ''}${seconds}s`;
+
+  // set time elapsed
+  elapsedTime.innerText = `${minutes ? minutes + 'm ': ''}${seconds}s`;
 }
 
 // at page launch
+function loadPageContent() {
+  const currentPath = window.location.pathname;
 
-function launchIndex() {
+  document.addEventListener('DOMContentLoaded', () => {
+    if(currentPath === '/index.html' || currentPath.endsWith('/werewolfGame/')) {
+      setupGame();
+    } else if(currentPath === '/game.html' || currentPath.endsWith('/werewolfGame/game.html')) {
+      startNewDay();
+    }
+  });
+}
+
+function setupGame() {
   refreshRoleList();
+  
+  // if there are players, display related content
   if(currentGame.players.length) {
     refreshPlayerList();
+    // if there are at least four players and roles are assigned, enable start game
     if(currentGame.playerCount >= 4 && !currentGame.unassignedPlayers.length) {
-      let startGameBtn = document.createElement("input");
-      startGameBtn.id = "start-game-btn"; startGameBtn.type = "button"; startGameBtn.className = "primary-btn"; startGameBtn.value = "Start Game";
-      startGameBtn.addEventListener("click", () => {
-        localStorage.setItem("currentGame", JSON.stringify(currentGame));
-        window.location.href = "game.html";
-      });
-      document.getElementById("game-setup").appendChild(startGameBtn);
+      addStartButton();
       document.getElementById("assign-roles-btn").value = "Reset Roles";
     }
   }
-  // game expansion toggle button
-  document.getElementById("expansion-toggle").addEventListener('change', () => {
+
+  // set expansion toggle starting point and handle events
+  const expansionToggleButton = document.getElementById("expansion-toggle");
+  if(currentGame.expansion) expansionToggleButton.setAttribute("checked", "checked");
+  expansionToggleButton.addEventListener('change', () => {
     currentGame.toggleExpansion();
     refreshRoleList(); 
   });
 
-  // add player button
+  // add player button/input
   document.getElementById("add-player-btn").addEventListener("click", addPlayer);
   document.getElementById("new-player").addEventListener("keyup", e => {if(e.key === "Enter" || event.keyCode === 13) addPlayer()});
+  
   // assign/reset roles
   document.getElementById("game-setup").addEventListener("click", e => {
     if(e.target.id === "assign-roles-btn" && e.target.value === "Assign Roles") {
@@ -364,15 +407,9 @@ function launchIndex() {
         alertMessage ? document.getElementById("players").removeChild(alertMessage) : null;
         currentGame.refreshGameRoles();
         currentGame.assignRoles();
+
         refreshPlayerList();
-    
-        let startGameBtn = document.createElement("input");
-        startGameBtn.id = "start-game-btn"; startGameBtn.type = "button"; startGameBtn.className = "primary-btn"; startGameBtn.value = "Start Game";
-        startGameBtn.addEventListener("click", () => {
-          localStorage.setItem("currentGame", JSON.stringify(currentGame));
-          window.location.href = "game.html";
-        });
-        document.getElementById("game-setup").appendChild(startGameBtn);
+        addStartButton();
         e.target.value = "Reset Roles";
       } else {
         // display alert message to add players
@@ -395,31 +432,17 @@ function launchIndex() {
   });
 }
 
-function launchGame() {
+function startNewDay() {
   refreshPlayerStatuses();
-  beginDay();
+  currentGame.getMorningAnnouncements().forEach(announcement => postAnnouncement(announcement));
+  
+  const dayTimer = document.createElement("p");
+  dayTimer.id = "day-timer";
+  document.getElementById("game-setup").appendChild(dayTimer);
+  displayElapsedTime();
+
 }
 
-
-const currentPath = window.location.pathname;
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("current pathname =", currentPath);
-  if(currentPath === '/index.html' || currentPath.endsWith('/werewolfGame/')) {
-    launchIndex();
-  } else if(currentPath === '/game.html' || currentPath.endsWith('/werewolfGame/game.html')) {
-    launchGame();
-  }
-});
-
-
-// window.BeforeUnloadEvent = () => {
-//   localStorage.setItem("currentGame", JSON.stringify(currentGame));
-// }
-
-
-
-// listening for:
-// expansion toggle
 
 
 

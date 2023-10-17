@@ -12,10 +12,10 @@ export class Player {
     this.attackedPlayer = null;
   }
 
-  static fromData(data) {
+  static fromData(data, game) {
     let player = new Player(data.name);
     Object.assign(player, data);
-    player.role = Role.fromData(data.role);
+    player.role = game.roles.find(role => role.key === data.role.key);
     return player;
   }
 
