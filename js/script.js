@@ -127,7 +127,7 @@ function cancelVoting() {
   currentGame.resetVotes();
   document.getElementById("instructions").remove();
   voteButton.remove();
-  refreshPlayerStatuses();
+  refreshDayPlayerCards();
   document.getElementById("cancel-vote-btn").remove();
 }
 
@@ -219,14 +219,27 @@ function toggleVoting(player) {
 function tallyVotes() {
   const voteResults = currentGame.countVotes();
   if(voteResults.eliminate.length > voteResults.keep.length) {
-    currentGame.nominated.eliminate();
-    postAnnouncement(`Vote passed. ${voteResults.nominee} has been eliminated.`);}
-  else postAnnouncement(`Vote failed. ${voteResults.nominee} remains in town.`);
+    currentGame.nominated.eliminated('vote');
+    postAnnouncement(`Vote passed. ${voteResults.nominee} has been eliminated.`);
+    checkForWinner();
+  } else {
+    postAnnouncement(`Vote failed. ${voteResults.nominee} remains in town.`);
+  }
   currentGame.resetVotes();
-  refreshPlayerStatuses();
+  refreshDayPlayerCards();
 } 
 
-
+function checkForWinner() {
+  const result = currentGame.checkWinCondition();
+  if(result) {
+    // replace this with navigation to a winner overview page based on the results
+    if(result === 'Werewolves') postAnnouncement("The town's population is too low. Werewolves win!");
+    else if(result === 'Town') postAnnouncement("The town has eliminated the werewolf threat. Town wins!");
+    else if(result === 'Jester') postAnnouncement("What is that sound? Whistling... laughing... crying? The festival of madness has descended upon the town. This could mean only one thing... The Jester wins!");
+    postAnnouncement("Game over. Thank you for playing.")
+  }
+  
+}
 
 function postAnnouncement(announcement) {
   const announcementBoard = document.getElementById("event-log");
@@ -270,7 +283,7 @@ function refreshPlayerList() {
   }
 }
 
-function refreshPlayerStatuses() {
+function refreshDayPlayerCards() {
   const activeList = document.getElementById("active-players-list"); 
   const graveyardList = document.getElementById("graveyard-list");
   const existingInstructions = document.getElementById("instructions");
@@ -290,6 +303,13 @@ function refreshPlayerStatuses() {
   while(graveyardList.firstChild) graveyardList.removeChild(graveyardList.firstChild);
   if(currentGame.graveyard) currentGame.graveyard.forEach(player => graveyardList.append(newPlayerCard(player)));
 }
+
+function refreshNightPlayerCards() {
+  // create and display cards for players with night abilities
+  // create and display cards for players without night abilities
+  // create and display cards for players in graveyard
+}
+
 
 function refreshRoleList() {
   const list = document.getElementById("roles-list");
@@ -433,16 +453,19 @@ function setupGame() {
 }
 
 function startNewDay() {
-  refreshPlayerStatuses();
+  refreshDayPlayerCards();
   currentGame.getMorningAnnouncements().forEach(announcement => postAnnouncement(announcement));
   
   const dayTimer = document.createElement("p");
   dayTimer.id = "day-timer";
   document.getElementById("game-setup").appendChild(dayTimer);
   displayElapsedTime();
-
 }
 
+function startNewNight() {
+
+
+}
 
 
 

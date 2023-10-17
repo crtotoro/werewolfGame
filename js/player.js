@@ -6,10 +6,11 @@ export class Player {
     this.key = this.name.toLowerCase().replace(' ','-');
     this.role = null;
     this.alive = true;
-    this.vote = false;
-    this.targeted = false;
-    this.protected = false;
-    this.attackedPlayer = null;
+    this.eliminatedBy = null; // if not alive, player who eliminated
+    this.vote = false; // specific to day cycle
+    this.isAttacked = false; // specific to night cycle
+    this.isProtected = false; // specific to night cycle
+    this.attacking = null; // specific to night cycle
   }
 
   static fromData(data, game) {
@@ -37,7 +38,8 @@ export class Player {
     this.vote = false;
   }
 
-  eliminate() {
+  eliminated(eliminatedBy) {
     this.alive = false;
+    this.eliminatedBy = eliminatedBy;
   }
 }

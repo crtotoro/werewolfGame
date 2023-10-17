@@ -141,8 +141,31 @@ export class WerewolfGame {
     return { nominee: this.nominated.name, eliminate: votedToEliminate, keep: votedToKeep };
   }
 
+  checkWinCondition() {
+    let winner = false;
+    const livingWerewolves = this.living.reduce((count, player) => {
+      player.role.key === 'werewolf' ? count++ : null;
+      return count;
+    } , 0)
+    const livingResidents = this.living.reduce((count, player) => {
+      player.role.key !== 'werewolf' ? count++ : null;
+      return count;
+    } , 0)
+    const jesterInGame = this.players.find(player => player.role.key === 'jester');
+    const jesterWon = this.graveyard.find(player => player.role.key === 'jester' && player.eliminatedBy === 'vote');
+  
+    // check if werewolves won
+    if(livingWerewolves === livingResidents) winner = 'Werewolves';
+    // check if town won
+    else if(!livingWerewolves) winner = 'Town';
+    // check if jester won
+    else if(jesterInGame && jesterWon) winner = 'Jester'; 
+    // else, game continues
+    return winner;
+  }
+
   resetVotes() {
-    this.living.forEach(player => player.resetVote());
+    this.players.forEach(player => player.resetVote());
     this.nominated = null;
   }
 
