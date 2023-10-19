@@ -4,6 +4,8 @@ export class Role {
     this.key = roleData.key;
     this.color = roleData.color;
     this.ability = roleData.ability;
+    this.singleUseAbility = roleData.singleUseAbility;
+    this.description = roleData.description;
     this.winCondition = roleData.winCondition;
     this.reminder = roleData.reminder;
     this.assigned = roleData.assigned;

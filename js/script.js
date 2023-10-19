@@ -27,16 +27,16 @@ function loadGame() {
 }
 
 // render functions
-function newPlayerCard(player) {
-  let playerCard = document.createElement("div");
-  playerCard.id = `${player.key}`; 
+function createPlayerCard(player) {
+  const card = document.createElement("div");
+  card.id = `${player.key}`; 
 
-  let playerName = document.createElement("h3");
-    playerName.id = `${player.key}-header`; playerName.className = "name"; playerName.innerText = `${player.name}`;
-    playerCard.appendChild(playerName);
+  const playerName = document.createElement("h3");
+  playerName.id = `${player.key}-header`; playerName.className = "name"; playerName.innerText = `${player.name}`;
+  card.appendChild(playerName);
   
   if(player.role) {
-    playerCard.className = "assigned-player-tile";
+    card.className = "assigned-player-tile";
     
     const roleName = document.createElement("p");
     roleName.innerText = `${player.role.name}`;
@@ -45,34 +45,33 @@ function newPlayerCard(player) {
     rolePortrait.id = `${player.key}-player-img`; rolePortrait.src = `images/${player.role.selectedImage}.png`; rolePortrait.className = "role-portrait-small";
     rolePortrait.addEventListener('click', e => toggleImage(e.target.id));
 
-    playerCard.style.background = `linear-gradient(to top left, ${darkenHexColor(player.role.color, 20)}, ${player.role.color})`;
-    playerCard.appendChild(rolePortrait); 
-    playerCard.appendChild(roleName);
+    card.style.background = `linear-gradient(to top left, ${darkenHexColor(player.role.color, 20)}, ${player.role.color})`;
+    card.appendChild(rolePortrait); 
+    card.appendChild(roleName);
 
     
   } else {
-    playerCard.className = "initial-player-tile";
+    card.className = "initial-player-tile";
     if(window.location.pathname === "/index.html" || "/werewolfGame/") {
-      let deletePlayerBtn = document.createElement("button");
+      const deletePlayerBtn = document.createElement("button");
       deletePlayerBtn.className = "icon-btn"; 
       deletePlayerBtn.addEventListener("click", () => {
         currentGame.deletePlayer(`${player.key}`);
         saveGame();
         refreshPlayerList();
       });
-      let deleteIcon = document.createElement("img");
+      const deleteIcon = document.createElement("img");
       
       deleteIcon.src = "./icons/delete-action.svg"; deleteIcon.alt = "Delete Player Button";
       deletePlayerBtn.appendChild(deleteIcon);
-      playerCard.appendChild(deletePlayerBtn);
+      card.appendChild(deletePlayerBtn);
     }
   }
 
-
-  return playerCard;
+  return card;
 }
 
-function newDayPlayerCard(player) {
+function createDayPlayerCard(player) {
   const card = document.createElement("div");
   const portrait = document.createElement("img");
   const playerName = document.createElement("h3");
@@ -99,39 +98,7 @@ function newDayPlayerCard(player) {
   return card;
 }
 
-function newStartVoteBtn(player) {
-  const setupBar = document.getElementById("game-setup");
-  const existingStartVoteBtn = document.getElementById("vote-btn");
-  if(existingStartVoteBtn) existingStartVoteBtn.remove();
-  const startVoteBtn = document.createElement("input");
-  startVoteBtn.id = "vote-btn"; startVoteBtn.type = "button"; startVoteBtn.className = "primary-btn"; startVoteBtn.value = "Start Vote";
-  startVoteBtn.addEventListener("click", () => toggleVoting(player));
-  setupBar.appendChild(startVoteBtn);
-  newCancelVoteBtn();
-}
-
-function newCancelVoteBtn() {
-  const setupBar = document.getElementById("game-setup");
-  const existingCancelVoteBtn = document.getElementById("cancel-vote-btn");
-  if(!existingCancelVoteBtn) {
-    const cancelVoteBtn = document.createElement("input");
-    cancelVoteBtn.id = "cancel-vote-btn"; cancelVoteBtn.type = "button"; cancelVoteBtn.className = "primary-btn"; cancelVoteBtn.value = "Cancel Voting";
-    cancelVoteBtn.addEventListener("click", () => cancelVoting());
-    setupBar.appendChild(cancelVoteBtn);
-  }
-}
-
-function cancelVoting() {
-  const voteButton = document.getElementById("vote-btn");
-  if(voteButton.value === "End Voting") postAnnouncement("Voting canceled.");
-  currentGame.resetVotes();
-  document.getElementById("instructions").remove();
-  voteButton.remove();
-  refreshDayPlayerCards();
-  document.getElementById("cancel-vote-btn").remove();
-}
-
-function newDayVotingCard(player) {
+function createPlayerVotingCard(player) {
   const card = document.createElement("div");
   const portrait = document.createElement("img");
   const playerName = document.createElement("h3");
@@ -182,76 +149,27 @@ function newDayVotingCard(player) {
   return card;
 }
 
-function hasVoted(player) {
-  const playerCardClasses = document.getElementById(`${player.key}`).classList;
-  if(player.vote) {
-    if(playerCardClasses.contains("voted-against")) playerCardClasses.replace("voted-against", "voted-for");
-    else if(!playerCardClasses.contains("voted-for")) playerCardClasses.add("voted-for");
-  } else {
-    if(playerCardClasses.contains("voted-for")) playerCardClasses.replace("voted-for", "voted-against");
-    else if(!playerCardClasses.contains("voted-against")) playerCardClasses.add("voted-against");
-  }
-   
-}
+function createNightPlayerCard(player) {
+  const card = document.createElement("div");
+  const portrait = document.createElement("img");
+  const playerName = document.createElement("h3");
+  const roleName = document.createElement("h4");
+  const ability = document.createElement("p");
 
-
-function toggleVoting(player) {
-  const startVoteBtn = document.getElementById("vote-btn");
-  const cancelVoteBtn = document.getElementById("cancel-vote-btn")
-  const activeList = document.getElementById("active-players-list");
-  const instructions = document.getElementById("instructions");
-  if(startVoteBtn.value === "Start Vote") {
-    currentGame.startVote(player);
-    while(activeList.lastChild !== instructions) activeList.removeChild(activeList.lastChild);
-    currentGame.living.forEach(player => activeList.appendChild(newDayVotingCard(player)));
-    postAnnouncement(`Voting to eliminate ${currentGame.nominated.name}...`);
-    instructions.innerText = `Voting to eliminate ${player.name} is open. Register each player's vote below. Minus to eliminate, plus to keep. Select End Vote to tally results.`;
-    startVoteBtn.value = "End Voting";
-  } else if(startVoteBtn.value === "End Voting") {
-    tallyVotes();
-    
-    instructions.innerText = "Voting has closed. Nominate another player or proceed to night when ready."
-    startVoteBtn.remove();
-    cancelVoteBtn.remove();
-  }
-}
-
-function tallyVotes() {
-  const voteResults = currentGame.countVotes();
-  if(voteResults.eliminate.length > voteResults.keep.length) {
-    currentGame.nominated.eliminated('vote');
-    postAnnouncement(`Vote passed. ${voteResults.nominee} has been eliminated.`);
-    checkForWinner();
-  } else {
-    postAnnouncement(`Vote failed. ${voteResults.nominee} remains in town.`);
-  }
-  currentGame.resetVotes();
-  refreshDayPlayerCards();
-} 
-
-function checkForWinner() {
-  const result = currentGame.checkWinCondition();
-  if(result) {
-    // replace this with navigation to a winner overview page based on the results
-    if(result === 'Werewolves') postAnnouncement("The town's population is too low. Werewolves win!");
-    else if(result === 'Town') postAnnouncement("The town has eliminated the werewolf threat. Town wins!");
-    else if(result === 'Jester') postAnnouncement("What is that sound? Whistling... laughing... crying? The festival of madness has descended upon the town. This could mean only one thing... The Jester wins!");
-    postAnnouncement("Game over. Thank you for playing.")
-  }
+  card.id = `${player.key}`; 
+  card.className = "night-card";
+  card.style.background = `linear-gradient(to top left, ${darkenHexColor(player.role.color, 20)}, ${player.role.color})`
   
-}
+  portrait.src = `./images/${player.role.selectedImage}.png`;
+  portrait.alt = `${player.name} ${player.role.name} Portrait`;
+  portrait.className = "player-portrait";
 
-function postAnnouncement(announcement) {
-  const announcementBoard = document.getElementById("event-log");
-  const newAnnouncement = document.createElement("p");
-  newAnnouncement.innerText = announcement;
-  if(/(day|night)\s[0-9]/i.test(announcement)) {
-    newAnnouncement.style.fontWeight = "800";
-    newAnnouncement.style.textDecoration = "underline";
-  }
-  announcementBoard.appendChild(newAnnouncement);
-}
+  playerName.innerText = `${player.name}`;
+  roleName.innerText = `${player.role.name}`;
+  
 
+
+}
 
 function newRoleCard(role) {
   let roleCard = document.createElement("div");
@@ -264,7 +182,7 @@ function newRoleCard(role) {
   roleName.className = "role-name"; roleName.innerText = `${role.name}`;
 
   let description = document.createElement("p");
-  description.className = "role-description"; description.innerHTML = `${role.ability}`;
+  description.className = "role-description"; description.innerHTML = `${role.description}`;
 
   let winCondition = document.createElement("p");
   winCondition.className = "win-condition"; winCondition.innerText = `Goal: ${role.winCondition.toUpperCase()}`;
@@ -279,11 +197,11 @@ function refreshPlayerList() {
   let playerList = document.getElementById("players-list");
   while(playerList.firstChild) playerList.removeChild(playerList.firstChild);
   if(currentGame.players) { 
-    currentGame.players.forEach(player => playerList.appendChild(newPlayerCard(player)));
+    currentGame.players.forEach(player => playerList.appendChild(createPlayerCard(player)));
   }
 }
 
-function refreshDayPlayerCards() {
+function refreshPlayerCards() {
   const activeList = document.getElementById("active-players-list"); 
   const graveyardList = document.getElementById("graveyard-list");
   const existingInstructions = document.getElementById("instructions");
@@ -297,19 +215,12 @@ function refreshDayPlayerCards() {
   // refresh active player list
   while(activeList.lastChild !== existingInstructions) activeList.removeChild(activeList.lastChild);
   if(!existingInstructions) activeList.appendChild(instructions);
-  if(currentGame.living) currentGame.living.forEach(player => activeList.appendChild(newDayPlayerCard(player)));
+  if(currentGame.living) currentGame.living.forEach(player => activeList.appendChild(createDayPlayerCard(player)));
 
   // refresh graveyard list
   while(graveyardList.firstChild) graveyardList.removeChild(graveyardList.firstChild);
-  if(currentGame.graveyard) currentGame.graveyard.forEach(player => graveyardList.append(newPlayerCard(player)));
+  if(currentGame.graveyard) currentGame.graveyard.forEach(player => graveyardList.append(createPlayerCard(player)));
 }
-
-function refreshNightPlayerCards() {
-  // create and display cards for players with night abilities
-  // create and display cards for players without night abilities
-  // create and display cards for players in graveyard
-}
-
 
 function refreshRoleList() {
   const list = document.getElementById("roles-list");
@@ -325,6 +236,7 @@ function refreshRoleList() {
 
   activeRoles.forEach(role => list.appendChild(newRoleCard(role)));
 }
+
 
 function toggleImage(imageId) {
   let roleKey, playerKey = null;
@@ -344,6 +256,106 @@ function addStartButton() {
     window.location.href = "game.html";
   });
   document.getElementById("game-setup").appendChild(startGameBtn);
+}
+
+// voting fucntionality
+function newStartVoteBtn(player) {
+  const setupBar = document.getElementById("game-setup");
+  const existingStartVoteBtn = document.getElementById("vote-btn");
+  if(existingStartVoteBtn) existingStartVoteBtn.remove();
+  const startVoteBtn = document.createElement("input");
+  startVoteBtn.id = "vote-btn"; startVoteBtn.type = "button"; startVoteBtn.className = "primary-btn"; startVoteBtn.value = "Start Vote";
+  startVoteBtn.addEventListener("click", () => toggleVoting(player));
+  setupBar.appendChild(startVoteBtn);
+  newCancelVoteBtn();
+}
+
+function newCancelVoteBtn() {
+  const setupBar = document.getElementById("game-setup");
+  const existingCancelVoteBtn = document.getElementById("cancel-vote-btn");
+  if(!existingCancelVoteBtn) {
+    const cancelVoteBtn = document.createElement("input");
+    cancelVoteBtn.id = "cancel-vote-btn"; cancelVoteBtn.type = "button"; cancelVoteBtn.className = "primary-btn"; cancelVoteBtn.value = "Cancel Voting";
+    cancelVoteBtn.addEventListener("click", () => cancelVoting());
+    setupBar.appendChild(cancelVoteBtn);
+  }
+}
+
+function hasVoted(player) {
+  const playerCardClasses = document.getElementById(`${player.key}`).classList;
+  if(player.vote) {
+    if(playerCardClasses.contains("voted-against")) playerCardClasses.replace("voted-against", "voted-for");
+    else if(!playerCardClasses.contains("voted-for")) playerCardClasses.add("voted-for");
+  } else {
+    if(playerCardClasses.contains("voted-for")) playerCardClasses.replace("voted-for", "voted-against");
+    else if(!playerCardClasses.contains("voted-against")) playerCardClasses.add("voted-against");
+  } 
+}
+
+function toggleVoting(player) {
+  const startVoteBtn = document.getElementById("vote-btn");
+  const cancelVoteBtn = document.getElementById("cancel-vote-btn")
+  const activeList = document.getElementById("active-players-list");
+  const instructions = document.getElementById("instructions");
+  if(startVoteBtn.value === "Start Vote") {
+    currentGame.startVote(player);
+    while(activeList.lastChild !== instructions) activeList.removeChild(activeList.lastChild);
+    currentGame.living.forEach(player => activeList.appendChild(createPlayerVotingCard(player)));
+    postAnnouncement(`Voting to eliminate ${currentGame.nominated.name}...`);
+    instructions.innerText = `Voting to eliminate ${player.name} is open. Register each player's vote below. Minus to eliminate, plus to keep. Select End Vote to tally results.`;
+    startVoteBtn.value = "End Voting";
+  } else if(startVoteBtn.value === "End Voting") {
+    tallyVotes();
+    
+    instructions.innerText = "Voting has closed. Nominate another player or proceed to night when ready."
+    startVoteBtn.remove();
+    cancelVoteBtn.remove();
+  }
+}
+
+function cancelVoting() {
+  const voteButton = document.getElementById("vote-btn");
+  if(voteButton.value === "End Voting") postAnnouncement("Voting canceled.");
+  currentGame.resetVotes();
+  document.getElementById("instructions").remove();
+  voteButton.remove();
+  refreshPlayerCards();
+  document.getElementById("cancel-vote-btn").remove();
+}
+
+function tallyVotes() {
+  const voteResults = currentGame.countVotes();
+  if(voteResults.eliminate.length > voteResults.keep.length) {
+    currentGame.nominated.eliminated('vote');
+    postAnnouncement(`Vote passed. ${voteResults.nominee} has been eliminated.`);
+    checkForWinner();
+  } else {
+    postAnnouncement(`Vote failed. ${voteResults.nominee} remains in town.`);
+  }
+  currentGame.resetVotes();
+  refreshPlayerCards();
+} 
+
+function checkForWinner() {
+  const result = currentGame.checkWinCondition();
+  if(result) {
+    // replace this with navigation to a winner overview page based on the results
+    if(result === 'Werewolves') postAnnouncement("The town's population is too low. Werewolves win!");
+    else if(result === 'Town') postAnnouncement("The town has eliminated the werewolf threat. Town wins!");
+    else if(result === 'Jester') postAnnouncement("What is that sound? Whistling... laughing... crying? The festival of madness has descended upon the town. This could mean only one thing... The Jester wins!");
+    postAnnouncement("Game over. Thank you for playing.")
+  } 
+}
+
+function postAnnouncement(announcement) {
+  const announcementBoard = document.getElementById("event-log");
+  const newAnnouncement = document.createElement("p");
+  newAnnouncement.innerText = announcement;
+  if(/(day|night)\s[0-9]/i.test(announcement)) {
+    newAnnouncement.style.fontWeight = "800";
+    newAnnouncement.style.textDecoration = "underline";
+  }
+  announcementBoard.appendChild(newAnnouncement);
 }
 
 // append day/night icon and time elapsed
@@ -453,7 +465,7 @@ function setupGame() {
 }
 
 function startNewDay() {
-  refreshDayPlayerCards();
+  refreshPlayerCards();
   currentGame.getMorningAnnouncements().forEach(announcement => postAnnouncement(announcement));
   
   const dayTimer = document.createElement("p");
@@ -463,7 +475,6 @@ function startNewDay() {
 }
 
 function startNewNight() {
-
 
 }
 

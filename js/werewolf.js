@@ -183,8 +183,9 @@ export class WerewolfGame {
       player.targeted = false;
       player.protected = false;
     });
-
   }
+
+  
 
 
 }
