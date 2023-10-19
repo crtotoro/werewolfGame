@@ -99,19 +99,19 @@ export class Player {
 
   follow(player) {
     if(this.abilityUsed) {
-        console.log(`Error: ${this.name} already used their only ${this.role.name} ability.`)
+        console.log(`Error: ${this.name} already used their only ${this.role.name} ability.`);
         return;
     }
     if(this.role.key === 'rogue') {
       this.following === player;
     } else {
-      console.log(`Error: ${player.name} is a ${player.role.name} and cannot follow another player`)
+      console.log(`Error: ${player.name} is a ${player.role.name} and cannot follow another player`);
     }
   }
 
   resurrect(player) {
     if(this.abilityUsed) {
-      console.log(`Error: ${this.name} already used their only ${this.role.name} ability.`)
+      console.log(`Error: ${this.name} already used their only ${this.role.name} ability.`);
       return;
     }
     if(this.role.key === 'witch-doctor') {
@@ -122,7 +122,15 @@ export class Player {
         this.abilityUsed = true;
       }
     } else {
-      console.log(`Error: ${player.name} is a ${player.role.name} and cannot resurrect another player`)
+      console.log(`Error: ${player.name} is a ${player.role.name} and cannot resurrect another player`);
+    }
+  }
+
+  reveal() {
+    if(this.role.key === 'mayor') {
+      this.abilityUsed ? console.log(`Error: ${this.name} already used their only ${this.role.name} ability.`) : this.abilityUsed === true;
+    } else {
+      console.log(`Error: ${player.name} is a ${player.role.name} and cannot reveal their role`);
     }
   }
 

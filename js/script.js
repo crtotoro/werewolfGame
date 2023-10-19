@@ -166,6 +166,25 @@ function createNightPlayerCard(player) {
 
   playerName.innerText = `${player.name}`;
   roleName.innerText = `${player.role.name}`;
+  ability.innerText = `${player.role.ability}`;
+
+  // ww
+
+  // doctor
+
+  // vigilante
+
+  // sheriff
+
+  // mimic
+
+  // overworked investigator
+
+  // rogue
+
+  // bodyguard
+
+  // witch doctor
   
 
 
@@ -325,6 +344,11 @@ function cancelVoting() {
 
 function tallyVotes() {
   const voteResults = currentGame.countVotes();
+  // const mayor = currentGame.living.find(player => player.role.key === mayor);
+  // let mayorVote = mayor ? mayor.vote : 'no mayor';
+  
+
+
   if(voteResults.eliminate.length > voteResults.keep.length) {
     currentGame.nominated.eliminated('vote');
     postAnnouncement(`Vote passed. ${voteResults.nominee} has been eliminated.`);
