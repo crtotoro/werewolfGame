@@ -570,3 +570,4 @@ function adminResurrect(playerKey) {
 
 window.adminKill = (playerKey) => adminKill(playerKey);
 window.adminResurrect = (playerKey) => adminResurrect(playerKey);
+window.refreshPlayerCards = () => refreshPlayerCards();
