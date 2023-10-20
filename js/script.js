@@ -411,26 +411,26 @@ function postAnnouncement(announcement) {
   announcementBoard.appendChild(newAnnouncement);
 }
 
+let elapsedTimeInterval;
 // append day/night icon and time elapsed
 function displayElapsedTime() {
   const gameSetup = document.getElementById("game-setup");
+  const elapsedTimeDiv = document.getElementById("time-elapsed");
+  while(elapsedTimeDiv.lastElementChild) elapsedTimeDiv.removeChild(elapsedTimeDiv.lastElementChild)
   
   const dayOrNightIcon = document.createElement("img");
   dayOrNightIcon.src = currentGame.night ? "./icons/moon-light.svg" : "./icons/sun-light.svg";
   dayOrNightIcon.alt = currentGame.night ? "Moon" : "Sun";
   
+  clearInterval(elapsedTimeInterval);
   const elapsedTime = document.createElement("p");
   elapsedTime.id = "day-night-timer";
-  setInterval(updateTimer, 1000, new Date().getTime());
+  elapsedTimeInterval = setInterval(updateTimer, 1000, new Date().getTime());
   
   // nest icon and elapsed time in a div
-  const elapsedTimeDiv = document.createElement("div");
-  elapsedTimeDiv.id = "time-elapsed"; 
-  elapsedTimeDiv.className = "timer";
+  
   elapsedTimeDiv.appendChild(dayOrNightIcon); 
   elapsedTimeDiv.appendChild(elapsedTime);
-  
-  gameSetup.appendChild(elapsedTimeDiv);
 }
 
 function updateTimer(startTime) {
@@ -453,6 +453,18 @@ function loadPageContent() {
     if(currentPath === '/index.html' || currentPath.endsWith('/werewolfGame/')) {
       setupGame();
     } else if(currentPath === '/game.html' || currentPath.endsWith('/werewolfGame/game.html')) {
+      
+      const dayNightBtn = document.getElementById("day-night-btn");
+      dayNightBtn.addEventListener("click", e => {
+        if(e.target.value === "Next Night") {
+          startNewNight();
+          dayNightBtn.value = "Next Day";
+        } else if(e.target.value === "Next Day") {
+          currentGame.queueAnnouncements([]);
+          startNewDay();
+          dayNightBtn.value = "Next Night";
+        }
+      });
       startNewDay();
     }
   });
@@ -518,22 +530,30 @@ function setupGame() {
 }
 
 function startNewDay() {
+  if(currentGame.day >= 1 && currentGame.night === true) currentGame.day++;
   currentGame.night = false;
-  currentGame.day++;
+  
+  const header = document.querySelector("h1");
+  header.innerText = `Werewolf Valley - ${currentGame.night ? 'Night' : 'Day'} ${currentGame.day}`;
+
   refreshPlayerCards();
   currentGame.getMorningAnnouncements().forEach(announcement => postAnnouncement(announcement));
   
-  const dayTimer = document.createElement("p");
-  dayTimer.id = "day-timer";
-  document.getElementById("game-setup").appendChild(dayTimer);
+
   displayElapsedTime();
+  
+  
 }
 
 function startNewNight() {
   currentGame.night = true;
+  
+  const header = document.querySelector("h1");
+  header.innerText = `Werewolf Valley - ${currentGame.night ? 'Night' : 'Day'} ${currentGame.day}`;
+  
+  displayElapsedTime();
 
 }
 
 
-
-window.refreshPlayerList = () => refreshPlayerList();
+window.refreshPlayerCards = () => refreshPlayerCards();

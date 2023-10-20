@@ -10,7 +10,7 @@ export class WerewolfGame {
     this.gameRoles = [[...this.baseTownRoles], this.expansion ? [...this.expansionTownRoles] : []];
     this.morningAnnouncements = [[]];
     this.werewolfCount = werewolfCount ? werewolfCount : this.getWerewolfCount();
-    this.day = 0;
+    this.day = 1;
     this.night = false;
     this.nominated = null;
   }
@@ -119,6 +119,10 @@ export class WerewolfGame {
 
   toggleExpansion() {
     this.expansion ? this.expansion = false : this.expansion = true;
+  }
+
+  queueAnnouncements(announcements) {
+    this.morningAnnouncements.push(announcements);
   }
 
   getMorningAnnouncements() {
