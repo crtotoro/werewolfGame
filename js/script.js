@@ -559,6 +559,7 @@ function adminKill(playerKey) {
   const playerIndex = currentGame.players.findIndex(player => player.key === playerKey);
   currentGame.players[playerIndex].alive = false;
   refreshPlayerCards();
+  checkForWinner();
 } 
 
 function adminResurrect(playerKey) {
