@@ -555,5 +555,18 @@ function startNewNight() {
 
 }
 
+function adminKill(playerKey) {
+  const player = currentGame.players.find(player => player.key === playerKey);
+  player.alive = false;
+  refreshPlayerCards();
+} 
 
-window.refreshPlayerCards = () => refreshPlayerCards();
+function adminResurrect(playerKey) {
+  const player = currentGame.players.find(player => player.key === playerKey);
+  player.alive = true;
+  refreshPlayerCards();
+} 
+
+
+window.adminKill = (playerKey) => adminKill(playerKey);
+window.adminResurrect = (playerKey) => adminResurrect(playerKey);
