@@ -1,5 +1,16 @@
 /* Variables */
 /* https://coolors.co/001b2e-84dcc6-7d6d61-edafb8-f7e1d7 */
+@font-face {
+  font-family: 'Night Brush';
+  src: url('./fonts/Night\ Brush.ttf'); 
+}
+
+@font-face {
+  font-family: 'God Hells';
+  src: url('./fonts/God\ Hells.ttf');
+}
+
+
 :root {
   /* --color-neutral: #EDD3C4; */
   --color-neutral: #9d99a0;
@@ -9,6 +20,9 @@
   --color-light-accent: #a8ba9a;
   --color-dark-accent: #4a314d; 
   
+  --font-header: 'God Hells', system-ui, sans-serif;
+  --font-names: 'Night Brush', system-ui, sans-serif;
+  --font-content: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 /* canvas reset */
@@ -34,7 +48,7 @@ body {
 
   
   color: var(--color-light);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-content);
   font-size: 1.4rem;
   font-weight: 500;
 
@@ -566,6 +580,21 @@ input:checked + .slider:before {
   border: 4px solid var(--color-neutral);
 }
 
+h1 {
+  font-family: var(--font-header);
+}
+
+h2 {
+  /* font-size: 3rem; */
+  font-family: var(--font-content);
+  letter-spacing: .1rem;
+}
+
+h3 {
+  font-size: 1rem;
+  font-family: var(--font-content);
+  letter-spacing: .1rem;
+}
 /* canvas Resizing */
 /* @media (max-width: 1520px) {
 
