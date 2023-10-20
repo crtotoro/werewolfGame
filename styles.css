@@ -584,8 +584,8 @@ h1 {
   font-family: var(--font-header);
 }
 
-h2 {
-  /* font-size: 3rem; */
+/* h2 {
+  font-size: 3rem;
   font-family: var(--font-content);
   letter-spacing: .1rem;
 }
@@ -594,7 +594,7 @@ h3 {
   font-size: 1rem;
   font-family: var(--font-content);
   letter-spacing: .1rem;
-}
+} */
 /* canvas Resizing */
 /* @media (max-width: 1520px) {
 

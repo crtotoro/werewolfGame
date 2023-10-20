@@ -92,7 +92,7 @@ function createDayPlayerCard(player) {
     card.addEventListener("click", () => {
       const instructions = document.getElementById("instructions");
       instructions.innerText = `${player.name} nominated for elimination. Select Start Vote to confirm.`;
-      newStartVoteBtn(player);
+      addStartVoteBtn(player);
     })
   }
   return card;
@@ -107,6 +107,7 @@ function createPlayerVotingCard(player) {
   const keepBtn = document.createElement("button");
   const eliminateImage = document.createElement("img");
   const keepImage = document.createElement("img");
+  
   
   card.id = `${player.key}`; 
   card.className = "voting-player-tile";
@@ -146,6 +147,25 @@ function createPlayerVotingCard(player) {
   card.appendChild(votingFor);
   card.appendChild(eliminateBtn);
   card.appendChild(keepBtn);
+
+  // mayor ability
+  const mayor = currentGame.players.find(player => player.role.key === "mayor");
+  if(mayor && player.key === mayor.key) {
+    const mayorAbilityBtn = document.createElement("button");
+    const mayorAbilityImage = document.createElement("img");
+  
+    mayorAbilityBtn.className = "icon-btn";
+    mayorAbilityImage.src = player.abilityUsed ? "./icons/mayor-revealed.svg" : "./icons/mayor-hidden.svg";
+    mayorAbilityBtn.appendChild(mayorAbilityImage);
+    mayorAbilityBtn.addEventListener("click", () => {
+      if(!player.abilityUsed) {
+        player.abilityUsed = true;
+        mayorAbilityImage.src = "./icons/mayor-revealed.svg";
+      }
+    })
+    card.appendChild(mayorAbilityBtn);
+  }
+
   return card;
 }
 
@@ -185,8 +205,6 @@ function createNightPlayerCard(player) {
   // bodyguard
 
   // witch doctor
-  
-
 
 }
 
@@ -257,17 +275,11 @@ function refreshRoleList() {
 }
 
 
-function toggleImage(imageId) {
-  let roleKey, playerKey = null;
 
-  /role/i.test(imageId) ? roleKey = imageId.replace('-role-img','') : playerKey = imageId.replace('-player-img','');
 
-  let foundRole = roleKey ? currentGame.roles.find(role => role.key === roleKey) : currentGame.players.find(player => player.key === playerKey).role;
-  foundRole.toggleSelectedImage();
-  document.getElementById(imageId).src = `images/${foundRole.selectedImage}.png`;  
-}
+// buttons
 
-function addStartButton() {
+function addStartGameButton() {
   const startGameBtn = document.createElement("input");
   startGameBtn.id = "start-game-btn"; startGameBtn.type = "button"; startGameBtn.className = "primary-btn"; startGameBtn.value = "Start Game";
   startGameBtn.addEventListener("click", () => {
@@ -278,7 +290,7 @@ function addStartButton() {
 }
 
 // voting fucntionality
-function newStartVoteBtn(player) {
+function addStartVoteBtn(player) {
   const setupBar = document.getElementById("game-setup");
   const existingStartVoteBtn = document.getElementById("vote-btn");
   if(existingStartVoteBtn) existingStartVoteBtn.remove();
@@ -286,10 +298,10 @@ function newStartVoteBtn(player) {
   startVoteBtn.id = "vote-btn"; startVoteBtn.type = "button"; startVoteBtn.className = "primary-btn"; startVoteBtn.value = "Start Vote";
   startVoteBtn.addEventListener("click", () => toggleVoting(player));
   setupBar.appendChild(startVoteBtn);
-  newCancelVoteBtn();
+  addCancelVoteBtn();
 }
 
-function newCancelVoteBtn() {
+function addCancelVoteBtn() {
   const setupBar = document.getElementById("game-setup");
   const existingCancelVoteBtn = document.getElementById("cancel-vote-btn");
   if(!existingCancelVoteBtn) {
@@ -299,6 +311,8 @@ function newCancelVoteBtn() {
     setupBar.appendChild(cancelVoteBtn);
   }
 }
+
+// actions
 
 function hasVoted(player) {
   const playerCardClasses = document.getElementById(`${player.key}`).classList;
@@ -344,17 +358,22 @@ function cancelVoting() {
 
 function tallyVotes() {
   const voteResults = currentGame.countVotes();
-  // const mayor = currentGame.living.find(player => player.role.key === mayor);
-  // let mayorVote = mayor ? mayor.vote : 'no mayor';
-  
+  const mayor = currentGame.living.find(player => player.role.key === 'mayor');
+  let eliminateVotes = voteResults.eliminate.length;
+  let keepVotes = voteResults.keep.length;
+  if(mayor && mayor.abilityUsed) mayor.vote ? eliminateVotes++ : keepVotes++;
 
+  currentGame.living.forEach(player => {
+    if(mayor && mayor.abilityUsed && player.key === mayor.key) postAnnouncement(`Mayor ${player.name} voted twice to ${player.vote ? 'ELIMINATE' : 'KEEP'}.`);
+    else postAnnouncement(`${player.name} voted to ${player.vote ? 'ELIMINATE' : 'KEEP'}.`);
+  });
 
-  if(voteResults.eliminate.length > voteResults.keep.length) {
+  if(eliminateVotes > keepVotes) {
     currentGame.nominated.eliminated('vote');
-    postAnnouncement(`Vote passed. ${voteResults.nominee} has been eliminated.`);
+    postAnnouncement(`Vote passed ${eliminateVotes} to ${keepVotes}. ${voteResults.nominee} has been eliminated.`);
     checkForWinner();
   } else {
-    postAnnouncement(`Vote failed. ${voteResults.nominee} remains in town.`);
+    postAnnouncement(`Vote failed ${eliminateVotes} to ${keepVotes}. ${voteResults.nominee} remains in town.`);
   }
   currentGame.resetVotes();
   refreshPlayerCards();
@@ -369,6 +388,16 @@ function checkForWinner() {
     else if(result === 'Jester') postAnnouncement("What is that sound? Whistling... laughing... crying? The festival of madness has descended upon the town. This could mean only one thing... The Jester wins!");
     postAnnouncement("Game over. Thank you for playing.")
   } 
+}
+
+function toggleImage(imageId) {
+  let roleKey, playerKey = null;
+
+  /role/i.test(imageId) ? roleKey = imageId.replace('-role-img','') : playerKey = imageId.replace('-player-img','');
+
+  let foundRole = roleKey ? currentGame.roles.find(role => role.key === roleKey) : currentGame.players.find(player => player.key === playerKey).role;
+  foundRole.toggleSelectedImage();
+  document.getElementById(imageId).src = `images/${foundRole.selectedImage}.png`;  
 }
 
 function postAnnouncement(announcement) {
@@ -437,7 +466,7 @@ function setupGame() {
     refreshPlayerList();
     // if there are at least four players and roles are assigned, enable start game
     if(currentGame.playerCount >= 4 && !currentGame.unassignedPlayers.length) {
-      addStartButton();
+      addStartGameButton();
       document.getElementById("assign-roles-btn").value = "Reset Roles";
     }
   }
@@ -465,7 +494,7 @@ function setupGame() {
         currentGame.assignRoles();
 
         refreshPlayerList();
-        addStartButton();
+        addStartGameButton();
         e.target.value = "Reset Roles";
       } else {
         // display alert message to add players
