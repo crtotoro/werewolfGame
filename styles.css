@@ -283,6 +283,10 @@ body {
   grid-column: 1/span2;
 }
 
+.voting-player-tile p {
+  font-size: .8rem;
+}
+
 .voting-player-tile button:nth-of-type(1) {
   grid-column: 1;
   justify-self: center;
@@ -583,6 +587,8 @@ input:checked + .slider:before {
 h1 {
   font-family: var(--font-header);
 }
+
+
 
 /* h2 {
   font-size: 3rem;

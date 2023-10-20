@@ -10,7 +10,7 @@ export class WerewolfGame {
     this.gameRoles = [[...this.baseTownRoles], this.expansion ? [...this.expansionTownRoles] : []];
     this.morningAnnouncements = [[]];
     this.werewolfCount = werewolfCount ? werewolfCount : this.getWerewolfCount();
-    this.day = 1;
+    this.day = 0;
     this.night = false;
     this.nominated = null;
   }

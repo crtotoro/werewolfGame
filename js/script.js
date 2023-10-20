@@ -518,6 +518,8 @@ function setupGame() {
 }
 
 function startNewDay() {
+  currentGame.night = false;
+  currentGame.day++;
   refreshPlayerCards();
   currentGame.getMorningAnnouncements().forEach(announcement => postAnnouncement(announcement));
   
@@ -528,6 +530,7 @@ function startNewDay() {
 }
 
 function startNewNight() {
+  currentGame.night = true;
 
 }
 
