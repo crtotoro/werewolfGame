@@ -556,14 +556,14 @@ function startNewNight() {
 }
 
 function adminKill(playerKey) {
-  const player = currentGame.players.find(player => player.key === playerKey);
-  player.alive = false;
+  const playerIndex = currentGame.players.findIndex(player => player.key === playerKey);
+  currentGame.players[playerIndex].alive = false;
   refreshPlayerCards();
 } 
 
 function adminResurrect(playerKey) {
-  const player = currentGame.players.find(player => player.key === playerKey);
-  player.alive = true;
+  const playerIndex = currentGame.players.findIndex(player => player.key === playerKey);
+  currentGame.players[playerIndex].alive = true;
   refreshPlayerCards();
 } 
 
