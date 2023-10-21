@@ -244,11 +244,6 @@ body {
 
   justify-content: center;
   text-align: center;
-  cursor: pointer;
-}
-
-.game-player-tile:hover {
-  transform: scale(105%);
 }
 
 .voting-player-tile {

@@ -89,11 +89,12 @@ function createDayPlayerCard(player) {
   card.appendChild(portrait);
   card.appendChild(playerName);
   if(!currentGame.night) {
-    card.addEventListener("click", () => {
-      const instructions = document.getElementById("instructions");
-      instructions.innerText = `${player.name} nominated for elimination. Select Start Vote to confirm.`;
-      addStartVoteBtn(player);
-    })
+    card.appendChild(addNominateBtn(player));
+    // card.addEventListener("click", () => {
+    //   const instructions = document.getElementById("instructions");
+    //   instructions.innerText = `${player.name} nominated for elimination. Select Start Vote to confirm.`;
+    //   addStartVoteBtn(player);
+    // })
   }
   return card;
 }
@@ -298,7 +299,7 @@ function addStartVoteBtn(player) {
   startVoteBtn.id = "vote-btn"; startVoteBtn.type = "button"; startVoteBtn.className = "primary-btn"; startVoteBtn.value = "Start Vote";
   startVoteBtn.addEventListener("click", () => toggleVoting(player));
   setupBar.appendChild(startVoteBtn);
-  addCancelVoteBtn();
+  
 }
 
 function addCancelVoteBtn() {
@@ -310,6 +311,20 @@ function addCancelVoteBtn() {
     cancelVoteBtn.addEventListener("click", () => cancelVoting());
     setupBar.appendChild(cancelVoteBtn);
   }
+}
+
+function addNominateBtn(player) {
+  const nominateBtn = document.createElement("input");
+  nominateBtn.type = "button";
+  nominateBtn.className = "primary-btn";
+  nominateBtn.value = "Nominate";
+  nominateBtn.addEventListener("click", () => {
+    const instructions = document.getElementById("instructions");
+    instructions.innerText = `${player.name} nominated for elimination. Select Start Vote to confirm.`;
+    addStartVoteBtn(player);
+    addCancelVoteBtn();
+  });
+  return nominateBtn;
 }
 
 // actions
