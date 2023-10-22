@@ -189,8 +189,14 @@ export class WerewolfGame {
     });
   }
 
-  
-
+  // resolve all night time abilities, apply outcomes and post next morning's announcements
+  getNightOutcome() {
+    const attackedPlayers = this.living.filter(player => player.isAttacked);
+    const protectedPlayers = this.living.filter(player => player.isProtected);
+    const resurrectedPlayers = this.graveyard.filter(player => player.isResurrected);
+    let savedPlayers, eliminatedPlayers; 
+  }
+ 
 
 }
 

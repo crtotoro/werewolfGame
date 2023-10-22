@@ -8,9 +8,12 @@ export class Player {
     this.vote = false; // specific to day cycle
     this.isAttacked = false; // specific to night cycle
     this.isProtected = false; // specific to night cycle
+    this.isFollowed = false; // specific to rogue's target
+    this.isResurrected = false; // specific to witch doctor's resurrected player
     this.protecting = null; // specific to body guard or doctor night cycle
     this.attacking = null; // specific to night cycle
     this.following = null; // specific to rogue night cycle
+    this.folio = []; // specific to sheriff and overworked investigator
     this.turnTaken = false; // resets after each night
     this.abilityUsed = false; // applies to roles with single use ability
   }
@@ -67,12 +70,15 @@ export class Player {
     this.turnTaken = true;
   }
 
+  // IN PROGRESS
   investigate(player1, player2 = null) {
     if(this.abilityUsed) {
       console.log(`Error: ${this.name} already used their only ${this.role.name} ability.`)
       return;
     }
+    // update to incorporate folio and return information from folio
     if(this.role.key === 'sheriff') {
+      this.folio.push(player1.key)
       return player1.role.key === 'werewolf' ? true : false;
     } else if(this.role.key === 'overworked-investigator') {
       this.abilityUsed = true;
@@ -104,6 +110,7 @@ export class Player {
     }
     if(this.role.key === 'rogue') {
       this.following === player;
+      player.isFollowed = true;
     } else {
       console.log(`Error: ${player.name} is a ${player.role.name} and cannot follow another player`);
     }
@@ -118,7 +125,7 @@ export class Player {
       if(player.alive) {
         console.log(`Error: ${player.name} cannot resurrect a living player. Choose a player from the graveyard.`)
       } else {
-        player.alive = true;
+        player.isResurrected = true;
         this.abilityUsed = true;
       }
     } else {
