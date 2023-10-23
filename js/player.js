@@ -70,7 +70,6 @@ export class Player {
     this.turnTaken = true;
   }
 
-  // IN PROGRESS
   investigate(player1, player2 = null) {
     if(this.abilityUsed) {
       console.log(`Error: ${this.name} already used their only ${this.role.name} ability.`)
