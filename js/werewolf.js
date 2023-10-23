@@ -195,6 +195,7 @@ export class WerewolfGame {
     const protectedPlayers = this.living.filter(player => player.isProtected);
     const resurrectedPlayers = this.graveyard.filter(player => player.isResurrected);
     let savedPlayers, eliminatedPlayers; 
+  
   }
  
 

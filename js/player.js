@@ -57,7 +57,7 @@ export class Player {
     player.isAttacked = true;
     this.attacking = player;
     this.turnTaken = true;
-    if(singleUseRoles.find(role => role.key === player.role.key)) this.abilityUsed = true;
+    if(singleUseRoles.find(role => role.key === this.role.key)) this.abilityUsed = true;
   }
 
   protect(player) {
@@ -76,16 +76,17 @@ export class Player {
       console.log(`Error: ${this.name} already used their only ${this.role.name} ability.`)
       return;
     }
-    // update to incorporate folio and return information from folio
+    
     if(this.role.key === 'sheriff') {
-      this.folio.push(player1.key)
-      return player1.role.key === 'werewolf' ? true : false;
+      this.folio.push({key: player1.key, werewolf: player1.role.key === 'werewolf'});
+      this.turnTaken = true;
     } else if(this.role.key === 'overworked-investigator') {
-      this.abilityUsed = true;
-      return [player1.role.name, player2.role.name];
+      if(this.folio.length < 2) this.folio.push({key: player1.key, role: player1.role.name});
+      if(this.folio.length < 2 && player2) this.folio.push({key: player2.key, role: player2.role.name});
+      if(this.folio.length >= 2) this.abilityUsed = true;
+      this.turnTaken = true;
     } else {
       console.log(`Error: ${this.name} is a ${this.role.name} and cannot investigate another player`);
-      return;
     };
   }
 
