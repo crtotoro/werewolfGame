@@ -6,27 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <!-- <link rel="stylesheet" href="styles.css"> -->
     <link rel="stylesheet" href="custom.css">
   </head>
-  <body>
-    <div id="canvas" class="canvas-container">
-      <header>
-        <h1 class="center">Werewolf Valley</h1>
-      </header>
+  <body class="bg-custom-dark light">
+    <div class="container-fluid m-3">
+      <div class="row">
+        <header class="col-lg-12">
+          <h1 class="font-header text-center">Werewolf Valley</h1>
+        </header>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div id="game-setup" class="container">
+            <!-- expansion toggle -->
+            <div class="row">
+              <div id="expansion-switch" class="form-check form-switch col-lg-3">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Expansion</label>
+                <input type="checkbox" role="switch" id="flexSwitchCheckDefault" class="form-check-input">
+              </div>
+
+              <!-- add player -->
+              <div id="add-player" class="col-lg-6 center">
+                <input type="button" id="add-player-btn" class="btn dark-accent bg-action" value="Add Player">
+                <input type="text" id="new-player" class="input" placeholder="Name" min="1">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       
-      <div id="game-setup" class="align-horizontal center">
-        <div id="expansion" class="align-horizontal center">
-          <p>Expansion</p>
-          <label class="toggle-btn">
-            <input type="checkbox" id="expansion-toggle">
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div id="add-player" class="align-horizontal">
-          <input type="button" id="add-player-btn" class="primary-btn" value="Add Player">
-          <input type="text" id="new-player" class="input-field" placeholder="Name" min="1">
-        </div>
+      
+        
         <input id="assign-roles-btn" type="button" class="primary-btn" value="Assign Roles">
       </div>
 
